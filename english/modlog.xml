@@ -1,0 +1,225 @@
+<?xml version="1.0"?>
+<!DOCTYPE extension SYSTEM "langformat.dtd" [
+  <!ENTITY call "&#xF000;">
+  <!ENTITY defaultcall "&#xF001;">
+  <!ENTITY zwsp "&#x200B;">
+  <!ENTITY site "https://42.rockett.space/v6/">
+]>
+
+<extension id="english" site-link="&site;modlog.html">
+  <command id="modlog" name="modlog">
+    <parenthelpsection>Manages the server's moderation logs.</parenthelpsection>
+    <description>
+      The modlog is a powerful tool that tracks any changes made to the server, or any events that the mods, user or bots cause.
+
+      This includes things like tracking when members join, leave or change their name, when a mod deletes a message or unbans someone, when a user quick-deletes one of their messages, or when a command kicks back info, like blacklist hits or rolestate triggers.
+    </description>
+
+    <output>
+      <line id="permission_in_modlog">Configuration commands can only be used in a modlog channel. Use `&call;modlog create` or `&call;modlog enable` to set this to a modlog.</line>
+      <line id="permission_not_in_modlog">There is already a modlog here.</line>
+      <pluralgroup id="no_subcommand">
+        <plural value="0">Use `&call;help modlog` to learn about how this command works.</plural>
+        <plural value="1">This channel is a modlog. Use `&call;modlog check` to see its config or `&call;modlog set` to change the config.</plural>
+      </pluralgroup>
+
+      <!-- Example Stuff -->
+      <line id="member_join_NAME">On member join</line>
+      <line id="member_join_DESCRIPTION">Flags when a member has joined the server</line>
+      <dict id="member_join_GROUPS">
+        <entry name="user"><line>member</line></entry>
+        <entry name="add"><line>join</line></entry>
+      </dict>
+      <line id="modlog_test_NAME">Test Mode</line>
+      <line id="modlog_test_DESCRIPTION">Enables the `&call;modlog test` command.</line>
+      <dict id="modlog_test_GROUPS">
+        <entry name="testing"><line>test</line></entry>
+      </dict>
+
+    </output>
+
+    <command id="create" name="create">
+      <parenthelpsection args="['name']">Creates a new modlog channel.</parenthelpsection>
+      <description>
+        Creates a new channel.
+
+        This channel will have a default permission set that allows only people with the "View Audit Log" permission, but there is nothing stopping you from using different permissions.
+        The default configs is for everything to be disabled. You can use `&call;modlog set` to change it.
+      </description>
+      <helpsection args="['name']">
+        Name is the name of the channel that is created.
+        If this is not set, then `42-mod-log` will be used.
+      </helpsection>
+
+      <output>
+
+      </output>
+    </command>
+
+    <command id="enable" name="enable" alias="here start">
+      <parenthelpsection>Converts the current channel into a modlog channel.</parenthelpsection>
+      <description>
+        Converts the current channel to a modlog.
+
+        The default configs is for everything to be disabled. You can use `&call;modlog set` to change it.
+      </description>
+
+      <output>
+        <line id="success">I have enabled the modlog for this channel. Use `&call;modlog set` to configure it. By default nothing is enabled.</line>
+      </output>
+    </command>
+
+    <command id="disable" name="disable" alias="stop remove">
+      <parenthelpsection>Removes the modlog and all configs from the current channel.</parenthelpsection>
+      <description>
+        Removes the modlog and all its config options from the current channel.
+
+        If you wish to preserve the options, you have several options:
+         - `&call;modlog pause` will temporarily disable the modlog but retain the configs.
+         - Removing 42's read permission will prevent her from sending additional messages.
+         - Moving the config options to a different channel with `&call;modlog move` will free the current channel.
+      </description>
+
+      <output>
+        <line id="success">I have removed the modlog and its configs from this channel.</line>
+      </output>
+    </command>
+
+    <command id="pause" name="pause">
+      <parenthelpsection>Disables the current modlog's updates until the pause command is run again.</parenthelpsection>
+      <description>
+        Temporarily disables the modlog while retaining config options.
+
+        Use this command again in a paused channel to re-enable it.
+      </description>
+
+      <output>
+
+      </output>
+    </command>
+
+    <command id="move" name="move">
+      <parenthelpsection args="#channel">Moves the current channel's configs to a different channel.</parenthelpsection>
+      <description>
+        Moves the current channel's configs into a different channel.
+
+        The other channel cannot already have a modlog active in it.
+        The current channel will no longer be a modlog.
+      </description>
+      <helpsection args="#channel">A name or mention</helpsection>
+
+      <output>
+
+      </output>
+    </command>
+
+    <command id="list" name="list" alias="channels">
+      <parenthelpsection>Shows which channels on the server have a modlog.</parenthelpsection>
+      <description>
+        Shows which channels on the server have a modlog associated with them.
+
+        To see each channel's configuration, use `&call;modlog check`, to edit its configuration, use `&call;modlog set`
+      </description>
+
+      <output>
+
+      </output>
+    </command>
+
+    <command id="check" name="check">
+      <parenthelpsection>Checks the configuration for the modlog in the current channel.</parenthelpsection>
+      <description>
+        Shows a list of the set configuration options in the channel and their values.
+
+        If a config has not been set, it will not be shown in this list, to see a list of all available configs, use `&call;modlog configs`.
+        To set a config for the channel, use `&call;modlog set`
+      </description>
+
+      <output>
+
+      </output>
+    </command>
+
+    <command id="configs" name="configs" alias="config option options">
+      <parenthelpsection>Shows a list of all available config options a modlog can have.</parenthelpsection>
+      <description>
+        Shows a list of all available configuration options for a modlog.
+      </description>
+
+      <output>
+
+      </output>
+    </command>
+
+    <command id="set" name="set" alias="update unset edit">
+      <parenthelpsection args="'option...' ['value']">Sets a config option for the current channel.</parenthelpsection>
+      <description>
+        Sets a config option in the current channel.
+
+        A full list of options can be found in `&call;modlog configs`
+        A config option name can be multiple words (for grouping purposes)
+        For instance, the group `member` can have the options `join`, `leave`, etc, in which case you'd do `&call;modlog set member join on`
+        Calling a group with set will show what members that group has. A call to bare `&call;modlog set` will display all the top level groups
+
+        For options that accept boolean values, there are many surrogate values you can use, such as true/false, yes/no, on/off, 1/0 etc, so use whichever one you are most comfortable with.
+      </description>
+      <helpsection args="'option...'">Removes a config from the channel and sets it to default.</helpsection>
+      <helpsection args="'option...' 'value'">Sets the value of the option for the current channel.</helpsection>
+
+      <output>
+        <line id="not_found">I couldn't find a modlog entry with that name</line>
+        <line id="no_args">Valid sub-settings for this settings group are: {0}</line>
+        <line id="no_args_BOOLEAN">This config accepts bool values (e.g. yes/no, on/off, enable/disable, 1/0)</line>
+        <line id="no_args_NUMERIC">This config accepts numeric values (e.g. 0, 1 or 5)</line>
+        <line id="no_args_TEXT">This config accepts any text value</line>
+        <line id="no_args_CHANNEL_ID">This config accepts a channel ID. User Settings &gt; Appearance &gt; Developer Mode</line>
+        <line id="no_args_CHANNEL_ID_LIST">This config accepts a list of channel IDs. User Settings &gt; Appearance &gt; Developer Mode</line>
+        <line id="success">I have updated the modlog.</line>
+        <dict id="bool_mapping">
+          <entry name="1"><line>1</line></entry>
+          <entry name="0"><line>0</line></entry>
+          <entry name="true"><line>1</line></entry>
+          <entry name="false"><line>0</line></entry>
+          <entry name="yes"><line>1</line></entry>
+          <entry name="no"><line>0</line></entry>
+          <entry name="ok"><line>1</line></entry>
+          <entry name="on"><line>1</line></entry>
+          <entry name="off"><line>0</line></entry>
+          <entry name="enable"><line>1</line></entry>
+          <entry name="disable"><line>0</line></entry>
+          <entry name="activate"><line>1</line></entry>
+          <entry name="deactivate"><line>0</line></entry>
+          <!-- Joke answers no need to translate if you don't want to -->
+          <entry name="aye"><line>1</line></entry>
+          <entry name="nay"><line>0</line></entry>
+          <entry name="yeah"><line>1</line></entry>
+          <entry name="nope"><line>0</line></entry>
+          <entry name="grant"><line>1</line></entry>
+          <entry name="deny"><line>0</line></entry>
+          <entry name="confirm"><line>1</line></entry>
+          <entry name="cancel"><line>0</line></entry>
+          <entry name="green"><line>1</line></entry>
+          <entry name="red"><line>0</line></entry>
+          <entry name="approve"><line>1</line></entry>
+          <entry name="disapprove"><line>0</line></entry>
+          <entry name="active"><line>1</line></entry>
+          <entry name="inactive"><line>0</line></entry>
+        </dict>
+      </output>
+    </command>
+
+    <command id="test" name="test">
+      <description>Triggers a modlog message. Requires `modlog.test`</description>
+      <output/>
+    </command>
+    <command id="test2" name="test2">
+      <description>Triggers a modlog message. Requires `modlog.test`</description>
+      <output/>
+    </command>
+    <command id="test3" name="test3">
+      <description>Triggers a modlog message. Requires `modlog.test`</description>
+      <output/>
+    </command>
+
+  </command>
+</extension>

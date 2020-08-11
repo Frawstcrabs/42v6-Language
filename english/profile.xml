@@ -1,0 +1,710 @@
+<?xml version="1.0"?>
+<!DOCTYPE extension SYSTEM "langformat.dtd" [
+  <!ENTITY call "&#xF000;">
+  <!ENTITY defaultcall "&#xF001;">
+  <!ENTITY zwsp "&#x200B;">
+  <!ENTITY site "https://42.rockett.space/v6/">
+]>
+
+<extension id="english" site-link="&site;profile.html">
+  <command id="profile" name="profile" alias="p">
+    <parenthelpsection>Lets me keep track of your online presence and handles.</parenthelpsection>
+    <description>
+      This command is like a much expanded version of Discord's profile, allowing you to display things such as your online handles, birthday, game showcase, etc.
+      Profiles are the same across all servers, but people can only see your profile if they share a server with you.
+
+      [Patreon supporters](&site;patreon.html) are able to have more profile fields, as well as a special bio!
+
+      You can use expanded markdown in profile fields, such as linking with `[Text](http://urlhere.com)`. Useful for linking to profiles.
+    </description>
+    <helpsection args="['@user']">
+      Gets a user's profile. If no user is given, gets your own profile.
+      If a user shares names with a subcommand, you can use `+profile get '@user'` instead.
+    </helpsection>
+
+    <documentation>
+      This command is like a much expanded version of Discord's profile, allowing you to display things such as your online handles, birthday, game showcase, etc.
+      Profiles are the same across all servers, but people can only see your profile if they share a server with you.
+
+      [Patreon supporters](&site;patreon.html) are able to have more profile fields, as well as a special bio!
+
+      You can use expanded markdown in profile fields, such as linking with `\[Text\]\(http://urlhere.com\)`. Useful for linking to profiles.
+      Each field has a length limit of 255, and field labels have a length limit of 32.
+      You can define 6 custom fields. Patreon supporters have access to 12 fields.
+
+      Each game can now have an optional description, for example, instead of just "CS:GO", you could have "CS:GO, Distinguished Master Guardian" just to show off how cool you are.
+      You can have up to 9 games in your showcase, supporters can have up to 12.
+
+      You can set a custom note that is up to 80 characters long. Patreon supporters have access to a bio which can be up to 2000 characters long.
+
+      Changed in v6:
+       - Added pages to help sort details.
+       - Games management is easier.
+       - Added better games showcase.
+       - Field limit raised to 12 for patreon supporters.
+       - Game limit raised to 9 for all users, 12 for patreon supporters.
+       - Field content can be longer now (255 chars up from 80)
+       - Can skip interactive timezone selection if you know what your timezone is already.
+       - Games can have additional context.
+       - Patrons can add a custom banner image to their profile.
+       - Removed `&defaultcall;profile make`. This was not viable to implement in the new framework.
+       - Moved the supporter bio from info to here.
+    </documentation>
+
+    <output>
+      <list id="month_labels">
+        <line>January</line>
+        <line>February</line>
+        <line>March</line>
+        <line>April</line>
+        <line>May</line>
+        <line>June</line>
+        <line>July</line>
+        <line>August</line>
+        <line>September</line>
+        <line>October</line>
+        <line>November</line>
+        <line>December</line>
+      </list>
+      <line id="date_format">{day} {month}</line>
+
+    </output>
+
+    <command id="get" name="get">
+      <parenthelpsection args="['@user']">Gets a user's profile.</parenthelpsection>
+      <description>Gets a user's profile, or your own if no user is given.</description>
+      <helpsection args="['@user']">Gets a user's profile, or your own if no user is given.</helpsection>
+      <documentation>
+        Gets a user's profile. If no user is given, then your own profile is fetched.
+        This command is left in as a compatibility option, since the "get" keyword is no longer required.
+      </documentation>
+
+      <output>
+        <line id="not_found">This user has not set up a profile.</line>
+        <line id="not_found_self">You currently do not have a profile set up. Use `&call;help profile` to find out what you can use to set up.</line>
+
+        <line id="overview_page">Overview</line>
+        <line id="field_page">Identity</line>
+        <line id="game_page">Games</line>
+        <line id="bio_page">Bio</line>
+
+        <dict id="overview_headers">
+          <entry name="timezone"><line>Timezone</line></entry>
+          <entry name="birthday"><line>Birthday</line></entry>
+        </dict>
+
+        <line id="default_bio">
+          This user has not set a bio, they can create one using `&call;profile bio 'content...'`
+        </line>
+      </output>
+    </command>
+
+    <command id="birthday" name="birthday">
+      <parenthelpsection args="'dd-mm'">Sets your profile birthday.</parenthelpsection>
+      <description>
+        Sets your profile birthday.
+        If the date is not obvious, then you will be asked to disambiguate, e.g. 1-12 could be 1st Dec or 12th Jan.
+
+        Valid date formats are `year-mm-dd` `mm-dd` `dd-mm`. `/` can be used in place of `-`.
+        for quickest results, just use `0-mm-dd` since year is not considered at all.
+
+        Your birthday is automagically added to the list in `&call;event`. It is also used in the `&call;solstice` countdown
+      </description>
+      <helpsection args="'date'">Sets your profile birthday.</helpsection>
+      <documentation>
+        Sets your profile birthday, as well as adding your birthday to the list of birthdays in `&defaultcall;event` on all your servers, and allowing you to use the `&defaultcall;solstice` command.
+
+        Valid date formats are `year-mm-dd`, `mm-dd` or `dd-mm` (the `-` can be replaced with a `/`).
+        If the date is ambiguous, such as 4-6, then 42 will ask you for either 4th June or 6th April. To avoid this, use the year month day format (year is disregarded, so you can put 0 there.)
+      </documentation>
+
+      <output>
+        <line id="PARSE_not_enough_values">I could not read the date. Make sure it is in the format dd-mm, mm-dd, yyyy-mm-dd or 0-mm-dd</line>
+        <line id="PARSE_cannot_cast_values">I could not read the date. Make sure the month and day numbers are actually numbers.</line>
+        <line id="PARSE_invalid_date">I cannot cast this date into any kind of date system. Make sure mm is between 1 and 12, and dd is between 1 and 28-31 (depending on the month)</line>
+        <line id="PARSE_timeout">Date disambiguation timed out.</line>
+
+        <line id="disambiguate_contents">
+          Please select one of these dates:
+          1: {}.
+          2: {}.
+        </line>
+
+        <line id="success">I have updated your profile birthday.</line>
+      </output>
+
+      <command id="clear" name="clear" alias="delete remove">
+        <parenthelpsection>Clears your birthday.</parenthelpsection>
+        <description>Clears your birthday</description>
+        <documentation type="parent" />
+
+        <output>
+
+        </output>
+      </command>
+    </command>
+
+    <command id="timezone" name="timezone">
+      <parenthelpsection args="'region/city'">Sets your profile timezone.</parenthelpsection>
+      <description>
+        Sets your profile timezone to either a UTC offset or a country code.
+
+        Your timezone is used in `&call;now` where the most common timezones are shown, as well as in `&call;solstice` to work out when your midnight is.
+      </description>
+      <helpsection args="'region/city'">Sets your timezone to a city, e.g. Europe/London. This is case sensitive.</helpsection>
+      <helpsection args="Etc/GMT'+|-hours'">
+        Hours offset can be applied here but it will not respond to daylight savings time.
+        For instance, CET (Central European Time) would be `Etc/GMT+1`, but to have daylight savings, you'd need to use `Europe/Paris`
+      </helpsection>
+      <documentation>
+        Sets the timezone in your profile to a POSIX timezone name.
+        These names are in the format "Region/City" (with proper capitalisation). Region is one of:
+
+        |---|---|---|---|
+        |Africa|America|Antarctica|Arctic|
+        |Asia|Atlantic|Australia|Europe|
+        |Indian|Mideast|Pacific||
+
+        And City is most likely the capital city of your country or state (or a notable state in your region)
+        For a full list of valid time zones, check out the [twiki page](https://twiki.org/cgi-bin/xtra/tzdatepick.html)
+
+        If you set the region to "Etc", you can add "GMT", "GMT+hours" or "GMT-hours" to set a specific offset. However, timezones set like this will not be able to dynamically react to daylight savings time.
+      </documentation>
+
+      <output>
+        <line id="invalid_timezone">
+          I could not understand the timezone you gave me.
+          Make sure the cases are correct and it is written exactly as shown on https://twiki.org/cgi-bin/xtra/tzdatepick.html
+        </line>
+        <line id="success">I have updated your profile timezone.</line>
+      </output>
+
+      <command id="interactive" name="interactive" alias="i">
+        <parenthelpsection>Selects your timezone interactively.</parenthelpsection>
+        <description>
+          Starts an interactive timezone selector. Useful for if you don't know what timezone you are in and are being effected by daylight savings.
+
+          Since the embeds here are very large, it is only available for use in DMs.
+        </description>
+        <documentation type="parent" />
+
+        <output>
+          <line id="nyi">
+            This feature is currently not yet implemented.
+            Here is how you can get a timezone definition yourself. First, visit this website:
+            https://twiki.org/cgi-bin/xtra/tzdatepick.html
+            And find your region (America, Europe, etc) and city, then click it
+            You'll see a part that looks like "Europe/London" in big letters. That is the part you need to copy paste.
+            Make sure you paste it as is.
+          </line>
+        </output>
+      </command>
+
+      <command id="clear" name="clear" alias="delete remove">
+        <parenthelpsection>Removes your timezone</parenthelpsection>
+        <description>
+          Removes your timezone. Commands requiring it will either no longer aggregate you, or assume you are in UTC
+        </description>
+        <documentation type="parent" />
+
+        <output>
+          <line id="success">I have cleared your profile timezone.</line>
+        </output>
+      </command>
+    </command>
+
+    <command id="note" name="note">
+      <parenthelpsection args="'text'">Sets a short note at the top of your profile.</parenthelpsection>
+      <description>
+        Sets a short note or tag-line that will be displayed on the first page of your profile.
+        This note can be 96 characters long.
+
+        You *can't* use any markdown here, as all the markdown characters will be escaped. Your note is rendered as italics.
+      </description>
+      <helpsection args="'text'">Text is the new note you want to set.</helpsection>
+      <documentation>
+        Adds a small note to the top of the first page of your profile. This note can be up to 96 characters long.
+        Any markdown in your note will be escaped (and the escapes counted against its length.)
+        The note will be rendered in italics in your profile.
+      </documentation>
+
+      <output>
+        <line id="too_long">Your note must be 96 characters or less including implicit markdown escapes.</line>
+        <line id="success">I have updated your profile's note.</line>
+      </output>
+
+      <command id="clear" name="clear" alias="delete remove">
+        <parenthelpsection>Clears your note</parenthelpsection>
+        <description>Clears your profile's note.</description>
+        <documentation type="parent" />
+
+        <output>
+          <line id="success">I have removed your profile note.</line>
+        </output>
+      </command>
+    </command>
+
+    <command id="game" name="game" alias="games">
+      <parenthelpsection>Manages your profile's games.</parenthelpsection>
+      <description>
+        Manages your profile's games showcase.
+        You can have up to 9 games. [Patreon supporters](&site;patreon.html) can have up to 12.
+
+        Each game title can be 32 characters long, and the fields can be 128.
+      </description>
+      <documentation>
+        Your profile can show what games you play and if you want, can also act as a skill showcase.
+        A game's title can be no longer than 32 characters.
+        Each game has an optional 128 character content field, which you can use to display things such as your online rank, best achievements, game review/rating, a link to a profile/friend code or a funny highlight.
+
+        You can have up to 9 games on your profile. [Patron supporters](&site;patreon.html) can have an additional 3 games, for a total of 12.
+      </documentation>
+
+      <output>
+        <line id="no_subcommand">To find out how to manage your profile's games, use `&call;help profile game`</line>
+        <line id="profile_empty">Your profile does not have any games. Use `&call;profile game add 'name' 'description'` to add one.</line>
+        <line id="invalid_key">Your profile does not have a game with this name. Remember that names are case sensitive and you need quotes.</line>
+      </output>
+
+      <command id="add" name="add" alias="create insert">
+        <parenthelpsection args="'name' ['content']">Adds a new game to your showcase.</parenthelpsection>
+        <description>
+          Adds a new game to your showcase as long as you have the required space for it.
+
+          You can use extended markdown in the content, such as `[text](http://link.com)`
+          Name must be 32 characters or less, and field can only be 128 characters including markdown.
+        </description>
+        <helpsection args="'name' ['content']">
+          Name should be the name of your game
+          Content can be additional context, such as your in-game rank.
+        </helpsection>
+        <documentation type="parent" />
+
+        <output>
+          <line id="full">
+            You already have the maximum amount of games. Please remove some first before adding more.
+            You can access 3 additional slots if you decide to support my developers! &site;patreon.html
+          </line>
+          <line id="full_patron">
+            You already have the maximum amount of games. Please remove some first before adding more.
+          </line>
+          <line id="already_exists">You already have a game called {0}. Use `&call;profile game edit {0} 'content'` to update it.</line>
+          <line id="too_long">The game's description must be less than 128 characters.</line>
+          <line id="name_too_long">The game's name must be less than 32 characters.</line>
+          <line id="success">I have added your new game.</line>
+        </output>
+      </command>
+
+      <command id="remove" name="remove" alias="delete">
+        <parenthelpsection>Interactively removes one of your games.</parenthelpsection>
+        <description>
+          Interactively removes one of your games.
+
+          I'll show you what games you have, and you reply with the number you want me to delete.
+        </description>
+        <helpsection args="'name'">
+          Or I can try and delete the name directly.
+          Name is case sensitive and must be correct to work.
+        </helpsection>
+        <documentation type="parent" />
+
+        <output>
+          <line id="success">I have removed {} from your profile's games.</line>
+        </output>
+      </command>
+
+      <command id="edit" name="edit" alias="update">
+        <parenthelpsection>Interactively updates one of your games.</parenthelpsection>
+        <description>
+          Interactively updates one of your games. I can only change the content, not the name.
+
+          I'll show you what games, you first tell me the number, and then afterwards, you can tell me what to change the content to.
+        </description>
+        <helpsection args="'name' 'content'">
+          Or if you know the name, I can update it directly.
+          The name has to be case correct to work.
+        </helpsection>
+        <documentation type="parent" />
+
+        <output>
+          <line id="wait_for_content">And what do you want to tell us about {}? (`{abort}` to cancel or `{nothing}` to clear)</line>
+          <line id="wait_for_content_nothing">nothing</line>
+          <line id="wait_for_content_timeout">Game update request timed out.</line>
+          <line id="success">I have updated your description for {}.</line>
+        </output>
+      </command>
+
+      <command id="clear" name="clear">
+        <parenthelpsection>Removes all games from your profile</parenthelpsection>
+        <description>
+          Removes all the games from your profile and allows you to start again.
+        </description>
+        <documentation type="parent" />
+
+        <output>
+          <line id="REQUEST">Are you sure you want to remove all of your profile games?</line>
+          <line id="success">I have cleared all of your profile games.</line>
+        </output>
+      </command>
+    </command>
+
+    <command id="field" name="field" alias="custom fields">
+      <parenthelpsection>Manages your custom fields.</parenthelpsection>
+      <description>
+        Manages the custom fields you have on your profile.
+        You can have up to 6 custom fields. [Patreon supporters](&site;patreon.html) can have 12.
+
+        Names can be up to 32 characters, and values can only be 256 characters including markdown.
+      </description>
+      <documentation>
+        Manages your profiles custom fields. Fields are arbitrary key-value pairs.
+
+        A field name is up to 32 characters long, and the value is up to 256 characters including markdown.
+        These are useful for linking to your social media or gaming accounts, as you can embed the link into it, e.g. `\[@MyTwitterHandle\[\(https://twitter.com/mytwitterhandle\)`
+        Fields can also be used as crude bio elements. There is no strict requirements on what they can be used for.
+
+        You can have up to 6 fields. [Patreon Supporters](&site;patreon.html) can have an additional 6, for a total of 12.
+      </documentation>
+
+      <output>
+        <line id="no_subcommand">To find out how to manage your profile's custom fields, use `&call;help profile field`</line>
+        <line id="profile_empty">Your profile does not have any custom fields. Use `&call;profile field add 'name' 'description'` to add one.</line>
+        <line id="invalid_key">Your profile does not have a field with this name. Remember that names are case sensitive and you need quotes.</line>
+      </output>
+
+      <command id="add" name="add" alias="create insert">
+        <parenthelpsection args="'name' 'body'">Adds a new custom field.</parenthelpsection>
+        <description>
+          Adds a new custom field assuming you have space for one.
+          You can have up to 6 custom fields. [Patreon supporters](&site;patreon.html) can have 12.
+
+          You can use extended markdown in the content, such as `[text](http://link.com)`
+          Name must be 32 characters or less, and field can only be 256 characters including markdown.
+        </description>
+        <helpsection args="'name' 'body'">Adds a new custom field.</helpsection>
+
+        <output>
+          <line id="full">
+            You already have the maximum amount of custom fields. Please remove some first before adding more.
+            You can access 6 additional slots if you decide to support my developers! &site;patreon.html
+          </line>
+          <line id="full_patron">
+            You already have the maximum amount of custom fields. Please remove some first before adding more.
+          </line>
+          <line id="already_exists">You already have a custom field called {0}. Use `&call;profile field edit {0} 'content'` to update it.</line>
+          <line id="too_long">The field content must be less than 255 characters.</line>
+          <line id="name_too_long">The field name must be less than 32 characters.</line>
+          <line id="success">I have added your new custom field.</line>
+        </output>
+      </command>
+
+      <command id="remove" name="remove" alias="delete">
+        <parenthelpsection>Interactively removes one of your custom fields.</parenthelpsection>
+        <description>
+          Interactively removes one of your custom fields.
+
+          I'll show you what fields you have set, and you reply with the number you want me to delete.
+        </description>
+        <helpsection args="'name'">
+          Or I can try and delete the name directly.
+          Name is case sensitive and must be correct to work.
+        </helpsection>
+
+        <output>
+          <line id="success">I have removed your profile's {}.</line>
+        </output>
+      </command>
+
+      <command id="edit" name="edit" alias="update">
+        <parenthelpsection>Interactively updates one of your custom fields.</parenthelpsection>
+        <description>
+          Interactively updates one of your fields. I can only change the content, not the name.
+
+          I'll show you what fields, you first tell me the number, and then afterwards, you can tell me what to change the content to.
+        </description>
+        <helpsection args="'name' 'content'">
+          Or if you know the name, I can update it directly.
+          The name has to be case correct to work.
+        </helpsection>
+
+        <output>
+          <line id="wait_for_content">And what do you want to tell us about {}? (`{abort}` to cancel`)</line>
+          <line id="wait_for_content_nothing">nothing</line>
+          <line id="wait_for_content_timeout">Field update request timed out.</line>
+          <line id="success">I have updated your profile's {}.</line>
+        </output>
+      </command>
+
+      <command id="clear" name="clear">
+        <parenthelpsection>Removes all custom fields from your profile</parenthelpsection>
+        <description>
+          Removes all the custom fields from your profile and allows you to start again.
+        </description>
+
+        <output>
+          <line id="REQUEST">Are you sure you want to remove all of your profile fields?</line>
+          <line id="success">I have cleared all of your profile fields.</line>
+        </output>
+      </command>
+    </command>
+
+    <command id="banner" name="banner">
+      <parenthelpsection args="'url'">Adds a custom banner image to your profile.</parenthelpsection>
+      <description>
+        Adds a custom banner image to your profile that will be displayed on the first page.
+        This is only available to [Patreon supporters](&site;patreon.html).
+      </description>
+      <helpsection args="'url'">Sets the custom banner image.</helpsection>
+
+      <output>
+        <line id="no_patreon">You need to be a [Patreon supporter](&site;patreon.html) in order to use this feature.</line>
+        <line id="invalid_url">This is not a valid URL that I can embed.</line>
+        <line id="too_long">The banner URL must be 128 characters or less.</line>
+        <line id="success">I have set your profile bio. It will appear at the front of your profile as long as you are a supporter.</line>
+      </output>
+
+      <command id="clear" name="clear" alias="remove delete">
+        <parenthelpsection>Removes the banner image</parenthelpsection>
+        <description>Removes the banner image</description>
+        <output>
+          <line id="success">I have removed your profile's banner image.</line>
+        </output>
+      </command>
+    </command>
+
+    <command id="bio" name="bio">
+      <parenthelpsection args="'content'">Adds a bio page to your profile</parenthelpsection>
+      <description>
+        If you are a [Patreon supporter](&site;patreon.html), you can use this to add a bio to your profile.
+        Your bio can be up to 2000 characters long and can include extended markdown, such as `[text](http://link.com)`
+      </description>
+      <helpsection args="'content'">Sets your profile bio. This overwrites your previous one.</helpsection>
+
+      <output>
+        <line id="no_patreon">You need to be a [Patreon supporter](&site;patreon.html) in order to use this feature.</line>
+        <line id="too_long">Your bio must be less than 2000 cha--- hold on, how did you trigger this message? Surely you sent me a single message, which has to be less than 2000 characters, right?</line>
+        <line id="success">I have set your profile's bio. It will appear at the back of your profile for as long as you are a supporter.</line>
+      </output>
+
+      <command id="paste" name="paste" alias="dump check post see put raw">
+        <parenthelpsection>Shows the unformatted content of your bio for copy-pasting.</parenthelpsection>
+        <description>
+          Shows the raw content of your bio to make copying it easier.
+          This does not work if your bio contains code blocks.
+        </description>
+
+        <output>
+
+        </output>
+      </command>
+
+      <command id="clear" name="clear" alias="delete remove">
+        <parenthelpsection>Clears your bio.</parenthelpsection>
+        <description>
+          Removes your profile bio content. Use `&call;profile bio paste` to get a copy paste version first.
+        </description>
+
+        <output>
+          <line id="success">I have cleared your profile's bio.</line>
+        </output>
+      </command>
+    </command>
+
+    <command id="delete" name="delete" alias="remove destroy nuke">
+      <parenthelpsection>Deletes your entire profile.</parenthelpsection>
+      <description>
+        Deletes your entire profile, including timezone, birthday, custom fields and games.
+        This action cannot be undone, so you'll have to set everything up again.
+      </description>
+
+      <output>
+        <line id="request_1">
+          Are you sure you want to delete your profile? This cannot be undone.
+          Type `{confirm}` to delete, or `{abort}` to cancel.
+        </line>
+        <line id="request_2">
+          Are you *really* sure? **This CANNOT be undone**, you'd have to redo everything again.
+          Type `{confirm}` to delete, or `{abort}` to cancel.
+        </line>
+        <line id="success">I have deleted your profile.</line>
+        <line id="timeout">Profile delete request timed out.</line>
+      </output>
+    </command>
+  </command>
+
+  <command id="event" name="event" alias="birthday birthdays calendar events">
+    <parenthelpsection>Accesses my calendar</parenthelpsection>
+    <description>
+      This calendar tells you upcoming birthdays for members in your server.
+      It also allows for custom events to manage things like tournaments or server special events.
+
+      To add your birthday to the calendar, use `&call;profile birthday 'dd-mm'`
+    </description>
+    <helpsection>Shows the next month's worth of events.</helpsection>
+    <helpsection args="month">Shows the given month's events. Month should be between 1 and 12.</helpsection>
+
+    <output>
+      <list id="month_labels">
+        <line>January</line>
+        <line>February</line>
+        <line>March</line>
+        <line>April</line>
+        <line>May</line>
+        <line>June</line>
+        <line>July</line>
+        <line>August</line>
+        <line>September</line>
+        <line>October</line>
+        <line>November</line>
+        <line>December</line>
+      </list>
+      <line id="date_format">{day} {month}</line>
+
+      <line id="overflow">
+        {}
+        and {} more
+      </line>
+      <line id="overflow_oneline">{} and {} more</line>
+      <line id="month_ARG_ERROR">Month should be a number between 1 and 12</line>
+
+      <line id="PARSE_not_enough_values">I could not read the date. Make sure it is in the format dd-mm, mm-dd, yyyy-mm-dd or 0-mm-dd</line>
+      <line id="PARSE_cannot_cast_values">I could not read the date. Make sure the month and day numbers are actually numbers.</line>
+      <line id="PARSE_invalid_date">I cannot cast this date into any kind of date system. Make sure mm is between 1 and 12, and dd is between 1 and 28-31 (depending on the month)</line>
+      <line id="PARSE_timeout">Date disambiguation timed out.</line>
+
+      <line id="disambiguate_contents">
+        Please select one of these dates:
+        1: {}.
+        2: {}.
+      </line>
+
+      <line id="no_results">
+        There are no events or birthdays this month.
+        To add an event, use `&call;event add 'dd-mm'`
+        To add a birthday, the relevant user should do `&call;profile birthday 'dd-mm'`
+      </line>
+    </output>
+
+    <command id="list" name="list" alias="all full">
+      <parenthelpsection>Shows the full calendar </parenthelpsection>
+      <description>
+        Shows all the dates with events on the calendar. It only shows up to 2 events per day though.
+        Use `&call;event` to just get a specific month of events, or `&call;event get 'dd-mm'` to get single days.
+      </description>
+      <helpsection>Shows the full calendar</helpsection>
+
+      <output>
+        <line id="no_results">
+          There are no events or birthdays on the server.
+          To add an event, use `&call;event add 'dd-mm' 'Event content'`
+          To add a birthday, the relevant user should do `&call;profile birthday 'dd-mm'`
+        </line>
+      </output>
+    </command>
+
+    <command id="get" name="get" alias="day">
+      <parenthelpsection args="'dd-mm'">Shows all the events of a single date.</parenthelpsection>
+      <description>
+        Shows all the events for a given date (if any events exist.)
+        Useful for days with a lot of events on.
+      </description>
+      <helpsection args="'dd-mm'">Gets a single days events.</helpsection>
+      <output>
+        <line id="no_results">
+          There are no events or birthdays on this day.
+        </line>
+      </output>
+    </command>
+
+    <command id="add" name="add" alias="create insert new">
+      <parenthelpsection args="'dd-mm' 'content'">Adds a new event to the calendar.</parenthelpsection>
+      <description>
+        Adds a new event to the calendar on the given date.
+        If events already exist on that day, it does not get deleted.
+      </description>
+      <helpsection args="'dd-mm' 'content'">Adds a new event named 'content' to the date given.</helpsection>
+
+      <output>
+        <line id="success">I have added an event for that date.</line>
+      </output>
+    </command>
+
+    <command id="set" name="set" alias="replace">
+      <parenthelpsection args="'dd-mm' 'content'">Sets a date on the calendar to a single event.</parenthelpsection>
+      <description>
+        Adds a new event to the calendar on the given date.
+        If events already exist for that day, they will be deleted and replaced.
+      </description>
+      <helpsection args="'dd-mm' 'content'">Replaces the events on the date given with a new event named 'content'</helpsection>
+
+      <output>
+        <line id="success">I have set this as the day's only event.</line>
+      </output>
+    </command>
+
+    <command id="delete" name="delete" alias="remove">
+      <parenthelpsection args="'dd-mm'">Interactively removes an event from the calendar.</parenthelpsection>
+      <description>
+        Removes an event from the calendar on the given date.
+        If the date has multiple events, you'll be able to choose which one to remove.
+      </description>
+      <helpsection args="'dd-mm'">Interactively removes an event from the date given.</helpsection>
+
+      <output>
+        <line id="no_results">There are no events on that date.</line>
+        <line id="success">I have removed that event.</line>
+      </output>
+    </command>
+
+    <command id="clear" name="clear">
+      <parenthelpsection args="'dd-mm'">Clears all events from the calendar day.</parenthelpsection>
+      <description>
+        Removes all events from the calendar on the given date.
+      </description>
+      <helpsection args="'dd-mm'">Clears all events from the date given.</helpsection>
+
+      <output>
+        <line id="success">I have cleared the events from that date.</line>
+      </output>
+    </command>
+
+    <command id="wipe" name="wipe" alias="deleteall removeall">
+      <parenthelpsection>Completely clears the calendar.</parenthelpsection>
+      <description>
+        Removes all events from the calendar.
+      </description>
+
+      <output>
+        <line id="REQUEST">
+          You are about to delete all of the custom events in the server.
+          Birthdays cannot be removed as they are profile entries not custom events.
+          Is this okay?
+        </line>
+        <line id="success">I have removed the server's custom events.</line>
+      </output>
+    </command>
+  </command>
+
+  <command id="now" name="now" alias="time tz timezone">
+    <parenthelpsection>Shows the timezones of server members.</parenthelpsection>
+    <description>
+      Shows the timezone of you, an optional target member, and the most common timezones on the server.
+    </description>
+    <helpsection args="['@target']">Gets the timezone of you and a target.</helpsection>
+
+    <output>
+      <line id="header">Set your timezone with `&call;profile timezone 'Region/City'`</line>
+      <line id="42_time">My Timezone</line>
+      <line id="user_time">{}'s Timezone</line>
+      <pluralgroup id="sum_time">
+        <plural value="1">1 Online Member</plural>
+        <plural>{} Online Members</plural>
+      </pluralgroup>
+      <line id="time_format">{0:%Y-%m-%d %H:%M:%S}</line>
+      <line id="utc_date">Time now: **{0:%Y-%m-%d %H:%M:%S}** UTC</line>
+      <line id="snowflake">Maximum Discord ID: {}</line>
+      <line id="footer">Your time</line>
+    </output>
+  </command>
+
+</extension>

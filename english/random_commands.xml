@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE extension SYSTEM "langformat.dtd" [
+  <!ENTITY call "&#xF000;">
+  <!ENTITY defaultcall "&#xF001;">
+  <!ENTITY zwsp "&#x200B;">
+  <!ENTITY site "https://42.rockett.space/v6/">
+]>
+
+<extension id="english" site-link="&site;random.html">
+  <command id="choose" name="choose" alias="choice choices sample">
+    <parenthelpsection args="[[+]'count'] 'args' ...">Selects value(s) from a list</parenthelpsection>
+    <description>
+      Selects a single value from a list of words.
+
+      If the first argument is a number, choose that many words, if that number is prefixed with a +, then choose with replacement.
+    </description>
+    <helpsection args="'option' ...">Chooses a single value.</helpsection>
+    <helpsection args="'count' 'option' ...">Chooses `count` values.</helpsection>
+    <helpsection args="'+count' 'option' ...">Chooses `count` values with replacement.</helpsection>
+    <documentation>
+      Selects values from a list of options.
+      By default selects a single value, but if the first option is a number, chooses that many options.
+
+      New in v6
+       - Ability to choose multiple values (with or without replacement)
+    </documentation>
+
+    <output>
+      <choice id="no_args">
+        <item weight="9">You asked me to make a choice but did not give me any options.</item>
+        <item weight="1">There is nothing to take from a bowl that is empty.</item>
+      </choice>
+
+      <choice id="single_option">
+        <item weight="9">You asked me to make a choice, but only gave me one item.</item>
+        <item weight="1">A choice is not a choice if there is nothing to choose from.</item>
+      </choice>
+
+      <choice id="all_same">
+        <item weight="9">You asked me to make a choice from a group of identical items?</item>
+        <item weight="1">The choice doesn't matter if the outcome is always the same.</item>
+      </choice>
+
+      <choice id="request_too_big">
+        <!--No plural needed, the option set must be >1 so the value must be >2-->
+        <item weight="9">You asked me to select {0} items, but only gave me {1}. Did you mean to use `&call;choose +{0} ...`?</item>
+        <item weight="1">Once my options are exhausted, there is no more I can do.</item>
+      </choice>
+
+      <choice id="invalid_request">
+        <item weight="8">The amount of items you requested is not logically possible.</item>
+        <item weight="1">Many people deal in abstracts. I am not one of those people.</item>
+        <item weight="1">Okay, if you can tell me how it is possible to select that many items, be my guest.</item>
+      </choice>
+    </output>
+  </command>
+</extension>

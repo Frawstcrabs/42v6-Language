@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<!DOCTYPE extension SYSTEM "langformat.dtd" [
+  <!ENTITY call "&#xF000;">
+  <!ENTITY defaultcall "&#xF001;">
+  <!ENTITY zwsp "&#x200B;">
+  <!ENTITY site "https://42.rockett.space/v6/">
+]>
+
+<extension id="english" site-link="&site;fun.html">
+  <command id="irc" name="irc" alias="bash">
+    <parenthelpsection>Posts a random quote from bash.org</parenthelpsection>
+    <description>
+      Posts a random quote from bash.org.
+      Returned results may be NSFW, the author can react with &#x1f5d1; within 30 seconds to delete the response.
+    </description>
+    <documentation>
+      Posts a random quote from bash.org.
+      Returned results may be NSFW, the author can react with &#x1f5d1; within 30 seconds to delete the response.
+
+      Changed in v6
+       - Caller can now delete returned messages.
+    </documentation>
+
+    <output />
+  </command>
+
+  <command id="youtube" name="youtube" alias="yt">
+    <parenthelpsection args="'query'">Searches YouTube for videos.</parenthelpsection>
+    <description>
+      Searches for a given term on YouTube and returns the 6 most relevant results.
+      Search results will be localised towards the language set for the channel. In here, the results will be in English.
+
+      As a Patron, you'll be shown the top 32 results, as well as statistics about each video where available.
+
+      If the channel invoking the command is not marked as NSFW, a safe-search level of moderate.
+    </description>
+    <helpsection args="'query'">Query is what to search for.</helpsection>
+    <documentation>
+      Searches YouTube for a given search term and returns the 6 most relevant results.
+      Search results are localised using the language that 42 is set to.
+
+      If the channel invoking the command is not marked as NSFW, a safe-search level of moderate.
+
+      You can use the reaction buttons to navigate the results.
+      &#x2b05;&#xfe0f; &#x27a1;&#xfe0f; Goes to the previous or next result or page.
+      &#x23ea; Goes back to the first result, or returns from page view.
+      &#x1f522; Displays the page view. From here, use the arrows and numbers to choose a video.
+      1&#x20e3;-4&#x20e3; Selects a video from the current page.
+
+      Changed in v6:
+       - Patrons now get 32 results rather than 12.
+       - Regular users now get 8 results rather than 1.
+       - Results are localised towards the channel's language.
+       - Moderate safe search is used when the invoking channel is not marked NSFW.
+    </documentation>
+
+    <output>
+      <line id="query_ARG_MISSING">You asked me to search YouTube but did not specify a search term.</line>
+
+      <!-- Must be a ISO 3166-1 alpha 2 code (GB, FR, DE) -->
+      <line id="query_region">GB</line>
+      <!-- Must be a ISO 639-1 2-letter code (en, fr, de)
+           or "zh-Hant" for chinese trad or "zh-Hans" for chinese simp -->
+      <line id="query_language">en</line>
+
+      <line id="header">Search for: {}</line>
+
+      <pluralgroup id="published_windows_years">
+        <plural value="1">{} Year</plural>
+        <plural>{} Years</plural>
+      </pluralgroup>
+      <pluralgroup id="published_windows_months">
+        <plural value="1">{} Month</plural>
+        <plural>{} Months</plural>
+      </pluralgroup>
+      <pluralgroup id="published_windows_weeks">
+        <plural value="1">{} Week</plural>
+        <plural>{} Weeks</plural>
+      </pluralgroup>
+      <pluralgroup id="published_windows_days">
+        <plural value="1">{} Day</plural>
+        <plural>{} Days</plural>
+      </pluralgroup>
+      <pluralgroup id="published_windows_hours">
+        <plural value="0">New</plural>
+        <plural value="1">{} Hour</plural>
+        <plural>{} Hours</plural>
+      </pluralgroup>
+
+      <dict id="magnitudes">
+        <entry name="u"><line>{} Views</line></entry>
+        <entry name="k"><line>{}k Views</line></entry>
+        <entry name="m"><line>{}M Views</line></entry>
+        <entry name="b"><line>{}B Views</line></entry>
+        <entry name="t"><line>{}T Views</line></entry>
+      </dict>
+
+      <line id="button_back">&#x23ea; Back to video.</line>
+      <line id="page_label">&#x2b05;&#xfe0f; Page {}/{} &#x27a1;&#xfe0f;</line>
+      <line id="no_votes">No Rating</line>
+    </output>
+  </command>
+</extension>

@@ -1,0 +1,499 @@
+<?xml version="1.0"?>
+<!DOCTYPE extension SYSTEM "langformat.dtd" [
+  <!ENTITY call "&#xF000;">
+  <!ENTITY defaultcall "&#xF001;">
+  <!ENTITY zwsp "&#x200B;">
+  <!ENTITY site "https://42.rockett.space/">
+]>
+
+<extension id="english" site-link="&site;v6/role_management.html">
+  <documentation>
+    These are some commands that control how 42 distributes roles to users.
+  </documentation>
+
+  <command id="giveme" name="giveme">
+    <parenthelpsection>
+      Allows users to give themselves roles.
+    </parenthelpsection>
+    <description>
+      Allows user to give themselves pre-defined roles.
+      These roles can be restricted to certain conditions e.g. users can only get a giveme role if they also have some other role.
+      Calling the command after a user has obtained the giveme role will remove it.
+    </description>
+    <documentation>
+      Givemes are set roles that users can give themselves, which they can have an unlimited number of.
+
+      Admins may add certain restrictions to givemes, namely:
+      - Required roles
+      - Ignored roles
+      - Time delay
+      Requires roles are ones which the user must have in order to obtain the giveme.
+      Ignored roles are ones which the user cannot have in order to obtain the giveme.
+      The time limit defines how many days the users must be on the guild for in order to obtain the giveme.
+
+      The role of the giveme itself is allowed as a required/ignored role.
+      Setting the giveme role as required means that users may only remove the giveme, not obtain it.
+      Setting it as ignored means that users may obtain it but cannot remove it.
+    </documentation>
+
+    <output>
+      <line id="cannot_manage_warning">WARNING: I cannot manage this role because it is above me in the role hierarchy. Please edit the hierarchy so that I can assign higher roles.</line>
+      <line id="cannot_manage_error">I cannot allow you to set up roles that are above you in the role hierarchy. Please contact your server owner for help.</line>
+
+      <line id="name_ARG_MISSING">You did not supply a giveme name...</line>
+      <line id="roles_ARG_MISSING">You did not supply any roles...</line>
+
+      <line id="name_not_found">I couldn't find the giveme you wanted.</line>
+      <line id="role_deleted">The role associated with this giveme has been deleted.</line>
+      <pluralgroup id="not_enough_time">
+        <plural value="1">I cannot give you this role yet. Try again tomorrow.</plural>
+        <plural value="default">I cannot give you this role yet. Try again in {} days.</plural>
+      </pluralgroup>
+      <pluralgroup id="missing_requirements">
+        <plural value="1">
+          You are missing a required role for this giveme: {1}
+        </plural>
+        <plural value="default">
+          You are missing {0} required roles for this giveme: {1}
+        </plural>
+      </pluralgroup>
+      <pluralgroup id="has_ignores">
+        <plural value="1">
+          You have a role that is blacklisted from getting this giveme: {1}
+        </plural>
+        <plural value="default">
+          You have {0} roles that are blacklisted from getting this giveme: {1}
+        </plural>
+      </pluralgroup>
+      <line id="no_permission">I cannot perform this operation, as I lack the Manage Roles permission.</line>
+      <line id="non_manageable">I cannot assign this role because it is above me in the role hierarchy. Please contact an admin about this issue.</line>
+
+      <line id="success_add">I have assigned that role.</line>
+      <line id="success_remove">I have removed that role.</line>
+    </output>
+
+    <command id="create" name="create" alias="make set add">
+      <parenthelpsection>Creates a new giveme.</parenthelpsection>
+      <description>
+        Creates a new giveme.
+        The new giveme can be modified afterwards with commands like `&call;giveme require`, `&call;giveme time`, etc.
+        These settings can also be added during creation, like so:
+        `&call;giveme create name role1 require role2 require role3 ignore role4 ignore role5 time 3d`
+        This will create a giveme for role1 under name, which requires that users have role2 and role3, do not have role4 and role5, and have been on the server for at least 3 days.
+      </description>
+
+      <output>
+        <line id="role_ARG_MISSING">You did not supply a role...</line>
+
+        <line id="name_too_long">Giveme names are limited to 255 characters.</line>
+        <line id="replace_request">The giveme you are creating already exists and will be replaced: `y` or `n`</line>
+        <line id="replace_timeout">Giveme replace request timed out.</line>
+
+        <!-- These should match with the name/aliases of the require/ignore/time subcommands -->
+        <!-- They don't have to but they should -->
+        <line id="require_names">require</line>
+        <line id="ignore_names">ignore</line>
+        <line id="time_names">time delay</line>
+
+        <line id="warning_trailing_cmd">WARNING: ignoring trailing command "{0}"</line>
+        <line id="warning_role_not_found">WARNING: cannot find role "{0}", skipped</line>
+        <line id="warning_self_require">WARNING: requiring giveme role itself will make the giveme remove-only</line>
+        <line id="warning_self_ignore">WARNING: ignoring the giveme role itself will make the giveme take-only</line>
+        <line id="warning_require_conflict">WARNING: ignore-require conflict, rejecting require</line>
+        <line id="warning_ignore_conflict">WARNING: ignore-require conflict, rejecting ignore</line>
+        <line id="warning_invalid_time">WARNING: invalid time requirement "{0}", skipped</line>
+
+        <line id="success">I have set `&call;giveme {0}` to assign {1}.</line>
+      </output>
+    </command>
+
+    <command id="list" name="list">
+      <parenthelpsection>Lists the givemes in a guild.</parenthelpsection>
+      <description>
+        Lists all of the givemes in a guild, as well as details such as requires, ignores and wait time.
+      </description>
+      <output>
+        <line id="no_givemes">There are no givemes in this guild.</line>
+        <line id="list_entry_deleted">Deleted</line>
+        <line id="list_line">&lt;Giveme {0}="{1}"&gt;</line>
+        <line id="list_requires">[Requires {0}]</line>
+        <line id="list_requires_nothing">[Requires nothing]</line>
+        <line id="list_ignores">[Ignores {0}]</line>
+        <line id="list_ignores_nothing">[Ignores nothing]</line>
+        <pluralgroup id="list_time">
+          <plural value="1">(Wait 1 day)</plural>
+          <plural value="default">(Wait {0} days)</plural>
+        </pluralgroup>
+      </output>
+    </command>
+
+    <command id="remove" name="remove" alias="delete">
+      <parenthelpsection>Deletes a giveme.</parenthelpsection>
+      <description>
+        Deletes a giveme from a guild.
+        This operation cannot be undone.
+      </description>
+
+      <output>
+        <line id="success">I have deleted this giveme.</line>
+      </output>
+    </command>
+
+    <command id="require" name="require">
+      <parenthelpsection>Adds a required role to a giveme.</parenthelpsection>
+      <description>
+        Adds a required role to a giveme.
+        Users may only obtain this giveme if they have all of the required roles.
+      </description>
+      <helpsection args="'role' ...">Toggle whether the given roles are required</helpsection>
+
+      <output>
+        <line id="success_add">Users now require {} to obtain this giveme.</line>
+        <line id="success_remove">Users now no longer require {} to obtain this giveme.</line>
+        <line id="ignore_conflict">The role {} is already ignored by this giveme.</line>
+      </output>
+    </command>
+
+    <command id="ignore" name="ignore">
+      <parenthelpsection>Adds an ignored role to a giveme.</parenthelpsection>
+      <description>
+        Adds an ignored role to a giveme.
+        Only users that have none of the ignored roles can obtain the giveme.
+      </description>
+      <helpsection args="'role' ...">Toggle whether the given roles are ignored</helpsection>
+
+      <output>
+        <line id="success_add">Users now must not have {} when obtaining this giveme.</line>
+        <line id="success_remove">Users are now allowed to have {} when obtaining this giveme.</line>
+        <line id="require_conflict">The role {} is already required by this giveme.</line>
+      </output>
+
+    </command>
+
+    <command id="time" name="time" alias="time">
+      <parenthelpsection>Adds a time delay to a giveme.</parenthelpsection>
+      <description>
+        Adds a time delay to a giveme.
+        Users must be on a server for longer than the time delay before they can obtain the giveme.
+      </description>
+      <helpsection args="'name' N">Sets a time delay of N days</helpsection>
+      <helpsection args="'name' Nd">Sets a time delay of N days</helpsection>
+      <helpsection args="'name' Nw">Sets a time delay of N weeks</helpsection>
+      <helpsection args="'name' Nm">
+        Sets a time delay of N months.
+        A month is assumed to be 30 days.
+      </helpsection>
+
+      <output>
+        <pluralgroup id="success">
+          <plural value="0">
+            Users may now obtain this giveme no matter how long they've been in the guild.
+          </plural>
+          <plural value="1">
+            Users must now be in the guild for at least 1 day in order to obtain this giveme.
+          </plural>
+          <plural value="default">
+            Users must now be in the guild for at least {} days in order to obtain this giveme.
+          </plural>
+        </pluralgroup>
+        <line id="invalid_time">Invalid time limit passed. See `&call;help giveme time` for more info.</line>
+      </output>
+    </command>
+  </command>
+
+  <command id="giveyou" name="giveyou">
+    <parenthelpsection>
+      Allows moderators to give users roles.
+    </parenthelpsection>
+    <description>
+      Allows moderators to give users pre-defined roles.
+    </description>
+    <helpsection args="'member' name">Gives 'member' the giveyou 'name'</helpsection>
+    <documentation>
+      Giveyous are set roles that can only be distributed by moderators.
+    </documentation>
+
+    <output>
+      <line id="member_ARG_MISSING">You did not specify a member to apply the giveyou to...</line>
+      <line id="name_ARG_MISSING">You did not supply a giveyou name...</line>
+      <line id="name_not_found">I couldn't find the giveyou you wanted.</line>
+      <line id="role_deleted">The role associated with this giveyou has been deleted.</line>
+      <line id="success_add">I have added that role.</line>
+      <line id="success_remove">I have removed that role.</line>
+      <line id="no_permission">I cannot perform this operation, as I lack the Manage Roles permission.</line>
+      <line id="non_manageable">I cannot assign this role because it is above me in the role hierarchy. Please contact an admin about this issue.</line>
+    </output>
+
+    <command id="create" name="create" alias="make add set">
+      <parenthelpsection>Creates a new giveyou.</parenthelpsection>
+      <description>Creates a new giveyou.</description>
+
+      <output>
+        <line id="role_ARG_MISSING">You did not supply a role...</line>
+        <line id="name_too_long">The maximum length of a giveyou name is 255 characters.</line>
+        <line id="success">I have set `&call;giveyou 'member' {0}` to assign {1} to 'member'.</line>
+      </output>
+    </command>
+
+    <command id="remove" name="remove" alias="delete">
+      <parenthelpsection>Deletes a giveyou.</parenthelpsection>
+      <description>
+        Deletes a giveyou.
+        This action cannot be undone.
+      </description>
+
+      <output>
+        <line id="success">I have deleted that giveyou.</line>
+        <!--
+          Everything else is handled by the parent command.
+          Magic.
+        -->
+      </output>
+    </command>
+
+    <command id="list" name="list">
+      <parenthelpsection>Lists all giveyous in a guild.</parenthelpsection>
+      <description>
+        Lists all giveyous in a guild.
+      </description>
+
+      <output>
+        <line id="no_giveyous">There are no giveyous in this guild.</line>
+        <line id="list_line">&lt;Giveyou {0}="{1}"&gt;</line>
+        <line id="list_entry_deleted">Deleted</line>
+      </output>
+    </command>
+  </command>
+
+  <command id="colourme" name="colourme" alias="colorme">
+    <parenthelpsection>
+      Allows users to give themselves a coloured name role.
+    </parenthelpsection>
+    <description>
+      Allows users to give themselves one role from a selection of roles.
+      This is mainly used to allow users to give their names specific colours, but any role can be used if so chosen.
+    </description>
+    <documentation>
+      Colourmes are roles that users are allowed to give themselves, but can only have one colourme role at any given time.
+      This is mainly used to allow users to give their names specific colours, but any roles can be used if so chosen.
+    </documentation>
+    <output>
+      <line id="name_ARG_MISSING">You did not supply a colourme name...</line>
+      <line id="name_not_found">I couldn't find the colourme you wanted.</line>
+      <line id="role_deleted">The role associated with the colourme has been deleted.</line>
+      <line id="no_permission">I cannot perform this operation, as I lack the Manage Roles permission.</line>
+      <line id="non_manageable">I cannot assign this role because it is above me in the role hierarchy. Please contact an admin about this issue.</line>
+      <line id="success_add">I have added that colourme.</line>
+      <line id="success_remove">I have removed that colourme.</line>
+    </output>
+
+    <command id="create" name="create" alias="make set add">
+      <parenthelpsection>
+        Create a new colourme.
+      </parenthelpsection>
+      <description>
+        Create a new colourme.
+      </description>
+
+      <output>
+        <line id="colourmes_ARG_MISSING">You did not supply any colourmes to create...</line>
+        <line id="no_colourme_role">You did not supply a colourme role...</line>
+        <line id="colourme_role_invalid">I cannot find the role "{0}". Remember that role names are case sensitive.</line>
+
+        <line id="create_success">I have set `&call;colourme {0}` to assign {1}.</line>
+      </output>
+    </command>
+
+    <command id="remove" name="remove" alias="delete">
+      <parenthelpsection>
+        Deletes a colourme.
+      </parenthelpsection>
+      <description>
+        Deletes a giveme.
+      </description>
+
+      <output>
+        <line id="success">I have deleted that colourme.</line>
+      </output>
+    </command>
+
+    <command id="list" name="list">
+      <parenthelpsection>
+        Lists all colourmes in a guild.
+      </parenthelpsection>
+      <description>
+        Lists all colourmes in a guild and all of their associated colours.
+      </description>
+
+      <output>
+        <line id="no_colourmes">There are no colourmes in this guild.</line>
+        <line id="list_line">&lt;Colourme {0}="{1}"&gt;</line>
+        <line id="list_entry_deleted">Deleted</line>
+      </output>
+    </command>
+
+    <command id="visualise" name="visualise" alias="visualize">
+      <parenthelpsection>
+        Displays each colour a colourme gives.
+      </parenthelpsection>
+      <description>
+        Creates an image containing all colourmes and what colours they give a user.
+      </description>
+
+      <output>
+        <line id="todo">This command hasn't been finished yet. Be sure to bug squas about it.</line>
+      </output>
+    </command>
+  </command>
+
+  <command id="mute" name="mute">
+    <parenthelpsection args="@member">
+      Alias for &call;giveyou user mute
+    </parenthelpsection>
+    <description>
+      An alias for &call;giveyou user mute.
+      Use `&call;giveyou create mute 'role'` to set this up.
+    </description>
+
+    <output>
+      <line id="user_ARG_MISSING">You did not specify a member to mute...</line>
+      <!-- everything else is taken from giveyou -->
+    </output>
+  </command>
+
+  <command id="member" name="member">
+    <parenthelpsection args="@member">
+      Alias for &call;giveyou user member
+    </parenthelpsection>
+    <description>
+      An alias for &call;giveyou user member.
+      Use `&call;giveyou create member 'role'` to set this up.
+    </description>
+
+    <output>
+      <line id="user_ARG_MISSING">You did not specify a member to give the member role to...</line>
+      <!-- everything else is taken from giveyou -->
+    </output>
+  </command>
+
+  <command id="roleban" name="roleban">
+    <parenthelpsection args="@member">
+      Applies a roleban role and removes the user's other roles
+    </parenthelpsection>
+    <description>
+      Similar to calling `&call;giveyou member roleban`, except it also removes the user's other roles until the command is called again. These removed roles will be stored for up to 24 hours, after which they are deleted.
+      Use `&call; giveyou create roleban 'role'` to set this up.
+      Note that calling `&call;giveyou member roleban` directly will not trigger the removal of the user's roles.
+    </description>
+
+    <output>
+      <line id="user_ARG_MISSING">You did not specify a member to roleban...</line>
+      <!-- everything else is taken from giveyou -->
+    </output>
+  </command>
+
+  <command id="colourstats" name="colourstats" alias="colorstats">
+    <parenthelpsection>Show number of users with a colourme colour</parenthelpsection>
+    <description>
+      Shows the number of users with a given colourme colour.
+    </description>
+
+    <output>
+      <line id="chart_title">Count of users with colourme colour:</line>
+      <line id="empty">Nobody in this guild has a colourme role.</line>
+    </output>
+
+    <command id="all" name="all">
+      <parenthelpsection>Show number of users with a given name colour</parenthelpsection>
+      <description>
+        Shows the number of users that have the same name colour.
+      </description>
+
+      <output>
+        <line id="chart_title">Number of users per name colour:</line>
+      </output>
+    </command>
+  </command>
+
+  <command id="voicerole" name="voicerole">
+    <parenthelpsection>
+      Allows a role to be given when a user joins a specific voice channel.
+    </parenthelpsection>
+    <description>
+      Allows a role to be given when a user joins a given voice channel.
+      This role could allow users to access a hidden text channel, for example.
+      The role can be set to persist after the user leaves the channel as well.
+    </description>
+    <documentation>
+      <!-- do this later, i guess -->
+    </documentation>
+
+    <output>
+      <line id="notice">
+        Please select one of the subcommands of this commands to configure voiceroles.
+        See &call;help voicerole for more info.
+      </line>
+      <line id="no_voicerole_assigned">This voice channel has no assigned voicerole.</line>
+    </output>
+
+    <command id="bind" name="bind" alias="set add make create">
+      <parenthelpsection>Binds a role to a voice channel.</parenthelpsection>
+      <description>
+        Binds a role to a voice channel. This role will be given to users that join the voice channel.
+      </description>
+
+      <output>
+        <line id="success">Users who join #{0} will now receive the role {1}.</line>
+      </output>
+    </command>
+    
+    <command id="unbind" name="unbind" alias="remove delete">
+      <parenthelpsection>Removes a voice rome from a voice channel.</parenthelpsection>
+      <description>
+        Removes a voice role from a voice channel.
+      </description>
+      
+      <output>
+        <line id="success">Users will no longer receive a role when they join this channel.</line>
+      </output>
+    </command>
+    
+    <command id="persist" name="persist">
+      <parenthelpsection>Sets a voice role to persist after leaving the channel.</parenthelpsection>
+      <description>
+        Sets a voice role such that the role will not be removed after leaving the channel.
+      </description>
+      
+      <output>
+        <line id="success_persist">The voicerole in this channel will now persist after users leave.</line>
+        <line id="success_no_persist">The voicerole in this channel will no longer persist after users leave.</line>
+      </output>
+    </command>
+    
+    <command id="list" name="list">
+      <parenthelpsection>Lists all voice channels with voice roles.</parenthelpsection>
+      <description>Lists all voice channels with voice roles.</description>
+
+      <output>
+        <line id="list_line">&lt;voice {0}="{1}"&gt;</line>
+        <line id="role_deleted">Deleted</line>
+      </output>
+    </command>
+  </command>
+
+  <command id="welcome" name="welcome">
+    <parenthelpsection>
+      Sets how I should react to newly-joined members.
+    </parenthelpsection>
+    <description>
+      Sets how I should react to newly-joined members.
+      This can range from setting specific roles, writing a welcome message when the join/send a message, or even set a random name colour for them.
+    </description>
+    <documentation>
+      <!-- do this later, i guess -->
+    </documentation>
+    <output>
+
+    </output>
+  </command>
+</extension>

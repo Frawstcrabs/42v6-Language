@@ -1,0 +1,363 @@
+<?xml version="1.0"?>
+<!DOCTYPE extension SYSTEM "langformat.dtd" [
+  <!ENTITY call "&#xF000;">
+  <!ENTITY defaultcall "&#xF001;">
+  <!ENTITY zwsp "&#x200B;">
+  <!ENTITY site "https://42.rockett.space/v6/">
+]>
+
+<extension id="english" site-link="&site;meta.html">
+  <documentation>
+    These are some meta-commands that relate to 42 directly.
+  </documentation>
+
+  <command id="donate" name="donate" alias="patron patreon nitro">
+    <parenthelpsection>Links to my Patreon campaign!</parenthelpsection>
+    <description>
+      Links to my Patreon campaign!
+      All the support I get goes straight towards my own upkeep~!
+    </description>
+    <documentation />
+
+    <output>
+      <line id="content">
+        To find out what you can get for supporting my creation, visit &lt;&site;patreon.html&gt;&zwsp;!
+      </line>
+    </output>
+  </command>
+
+  <command id="join" name="join" alias="invite">
+    <parenthelpsection>Adds me to a server!</parenthelpsection>
+    <description>
+      Makes me send a link that you can use to invite me to a server.
+      You must have Manage Server permissions on your server to add bots.
+
+      For an explaination of all the permissions I request, visit my [site](&site;why.html)
+    </description>
+    <documentation />
+
+    <output>
+      <line id="content">
+        To invite me to a server, you or your server's admin should visit &site;join
+      </line>
+    </output>
+  </command>
+
+  <command id="echo" name="echo">
+    <description>
+      Makes me repeat a line.
+      (I don't understand the logic of this exercise when `&call;tag eval` exists)
+    </description>
+    <helpsection args="'content...'">The content to repeat.</helpsection>
+    <documentation />
+    <output />
+  </command>
+
+  <command id="faq" name="faq">
+    <parenthelpsection>Posts some frequently asked questions and answers.</parenthelpsection>
+    <description>
+      Posts some frequently asked questions and answers.
+      To find more frequently asked questions and in-depth answers, visit &site;faq.html
+    </description>
+    <documentation />
+
+    <output>
+      <list id="questions">
+        <list>
+          <line>Who are you? Why are you here?</line>
+          <line>
+            I'm **42**. I assume you know what Discord bots are already? I'm one of the first ones ever made.
+            If you haven't ever seen a bot before, it means that I listen to messages that mention me and then send back responses depending on what you ask for.
+            I'm here because someone with the "Manage Server" permission invited me!
+          </line>
+        </list>
+        <list>
+          <line>Why do you exist?</line>
+          <line>
+            Many many years ago, I was no more than a way for squaswin to learn Python.
+            Now though, I'm a large scale bot that is being built by Frawst and Lanterns, and designed to generally make Discord a more fun place to be!
+          </line>
+        </list>
+        <list>
+          <line>Someone is using you to spam my server, what do I do.</line>
+          <line>
+            Okay, first, keep calm because I have been banned from some servers because random bad people abuse me to spam.
+            Anyway, to solve the issue, use the `&call;botban @member` command. Once you do that, the bad people cannot use my commands on your server any more.
+            If they aren't using my commands to spam, but instead one of the auto-responders that you can enable, then it may be time to enforce your own server's anti-spamming rules and take appropriate moderator action.
+            I am just a tool. I am not a weapon. I by no means am malicious. Only my users have the potential to be.
+          </line>
+        </list>
+        <list>
+          <line>Why aren't my tags working in this server?</line>
+          <line>
+            By definition, tags are isolated to the server you are on.
+            You can copy your tags to other servers with `&call;tag clone` or `&call;tag pull`.
+            You can also make [generic tags](&site;patreon.html#tag)
+            Please note that the reason for this is because some servers have more restrictive rules, so when you clone tags, make sure that the tags follow the destination server's rules.
+          </line>
+        </list>
+        <list>
+          <line>How can I give someone a role when they join the server?</line>
+          <line>
+            My welcome command can do that and more.
+            You can use `&call;welcome role 'name'` to choose a role that will be given to each user when they join.
+            You can also use `&call;rolestate` to have me restore the roles of members who have previously left too!
+          </line>
+        </list>
+        <list>
+          <line>How can I support you and your maintainers?</line>
+          <line>
+            My creator has a [Patreon](&site;patreon.html) which you can support me through.
+            You'll also get lots of cool perks to use, like generic tags, more coins and a bigger profile with a nifty banner and bio!
+          </line>
+        </list>
+        <list>
+          <line>I have more questions!</line>
+          <line>
+            You can see more FAQ questions with more in-depth answers on [my site](&site;faq.html)
+            You can also ask around at my [server](https://discord.me/kiwibots) if you have questions or suggestions.
+          </line>
+        </list>
+      </list>
+    </output>
+  </command>
+
+  <command id="status" name="status">
+    <parenthelpsection>Lists all my status messages.</parenthelpsection>
+    <description>
+      Lists all of my status messages and the times at which they'll appear.
+      This can also be used by patrons to add custom statuses to the list.
+      See &site;patreon.html#status for more details.
+    </description>
+    <documentation>
+      Lists all of my status messages and the times at which they'll appear.
+
+      Patrons can also use this command to set their own custom status message which will also be displayed.
+      Note that the message must also be approved by moderators first.
+      There is a maximum status length of 48 characters, not including the leading "Playing" and such.
+      See &site;patreon.html#status for more information.
+    </documentation>
+
+    <output>
+      <line id="INVALID_CODE">
+        <!-- For other languages, you may want to add explanations for each of the possible options -->
+        I couldn't understand what type of status you wanted.
+        The possible options are "playing", "watching" and "listening".
+      </line>
+
+      <line id="list_header">Current status cycle:</line>
+      <line id="playing">Playing {}</line>
+      <line id="listening">Listening to {}</line>
+      <line id="watching">Watching {}</line>
+      <line id="streaming">Streaming {}</line>
+      <line id="no_pending_status">This user has no pending custom status.</line>
+    </output>
+
+    <command id="check" name="check">
+      <parenthelpsection>Checks a user's custom status.</parenthelpsection>
+      <description>
+        Shows a user's custom status message, if there is one.
+        Note that only patrons can create custom statuses.
+      </description>
+      <output>
+        <line id="member_ARG_MISSING">
+          You asked me to check a user's custom status, but didn't tell me whose to check. Please see `&call;help status check` for more info.
+        </line>
+        <line id="check_status">This user's custom status is "{}"</line>
+        <line id="no_custom_status">This user hasn't or can't create a custom status message. This feature is limited only to patrons.</line>
+      </output>
+    </command>
+
+    <command id="add" name="add">
+      <parenthelpsection>Adds a custom status message.</parenthelpsection>
+      <description>
+        Adds a custom status message to be displayed regularly.
+        This features is limited only to patrons.
+
+        The possible types of status that can be displayed are "playing", "watching" or "listening to".
+        Note that the message must also be approved by moderators before it can be displayed.
+        The maximum length of a status message is 48 characters, not including the leading "Playing" and such.
+      </description>
+
+      <output>
+        <line id="status_code_ARG_MISSING">
+          You asked me to submit a custom status, but didn't write anything for the status itself.
+          Please see `&call;help status add` for more info.
+        </line>
+        <line id="message_ARG_MISSING">
+          You asked me to submit a custom status, but didn't write anything for the status itself.
+          Please see `&call;help status add` for more info.
+        </line>
+        <line id="status_too_long">Custom statuses can be no longer than 48 characters, not including the status type at the start.</line>
+        <line id="success">I have submitted your status message. Once it's approved, it will appear as one of my statuses.</line>
+      </output>
+    </command>
+
+    <!-- These subcommands are owner-only, so you can skip them if you want -->
+
+    <command id="accept" name="accept">
+      <parenthelpsection>Approves a custom status message.</parenthelpsection>
+      <description />
+      <output>
+        <line id="member_ARG_MISSING">No member given.</line>
+        <line id="success">I have accepted this user's custom status.</line>
+      </output>
+    </command>
+
+    <command id="reject" name="reject">
+      <parenthelpsection>Rejects a custom status message.</parenthelpsection>
+      <description />
+      <output>
+        <line id="member_ARG_MISSING">No member given.</line>
+        <line id="success">I have rejected this user's custom status.</line>
+      </output>
+    </command>
+  </command>
+
+  <command id="about" name="about">
+    <parenthelpsection>Makes me send details about myself</parenthelpsection>
+    <description>
+      This shows details about myself, my code, my authors and my contacts
+    </description>
+    <documentation>
+      TODO
+
+      New in v6:
+       - Added link to framework
+       - Now responds in the channel instead of DMs
+    </documentation>
+
+    <output>
+      <line id="body">
+        Hello, I am 42. I was created by @squaswin back in 2015 as a small learning project, but in that time I have become a much larger bot.
+        I have many useful features designed for all use cases from moderation to content management to fun and games.
+
+        For information about what I am capable of, visit my [website](&site;)
+        To invite me to your server, invite me [here](&site;join)
+        To suggest new features, report bugs, or provide feedback, join my [server](https://discord.me/kiwibots)
+        To help support my development, check out my [patreon](&site;patreon.html)
+
+        My framework is a bespoke one written by Frawst and Lanterns, inspired by discord.py's ext.commands module and my predecessors framework. Find the framework [here](https://github.com/Frawstcrabs/42v6-Framework)
+      </line>
+
+      <list id="fields">
+        <line>Developers</line>
+        <line>Library and Tools</line>
+        <line>Translation Author</line>
+      </list>
+    </output>
+  </command>
+
+  <command id="check" name="check">
+    <parenthelpsection args="['@target']">Shows a user's bot permissions.</parenthelpsection>
+    <description>
+      Shows which of the most common permissions are available for a user.
+      If no user is given, then shows permissions for yourself.
+
+      Lines that start with a `+` (yellow) are granted.
+      Lines that start with a `-` (red) are denied.
+    </description>
+    <helpsection args="['@target']">Shows a user's bot permissions.</helpsection>
+    <documentation>TODO</documentation>
+
+    <output>
+      <line id="name_owner">Developer</line>
+      <line id="name_buds">Developer Buds</line>
+      <line id="name_patrons">Patreon Supporters</line>
+      <line id="name_guild_owner">Server Owner</line>
+      <line id="name_guild_admin">Server Admin</line>
+      <line id="name_guild_manager">Server Manager</line>
+      <line id="name_channel_manager">Channel Manager</line>
+      <line id="name_bot_admin">Server Bot Admin</line>
+      <line id="name_guild_mod">Server Moderator</line>
+      <line id="name_channel_mod">Channel Moderator</line>
+      <line id="name_bot_mod">Server Bot Moderator</line>
+      <line id="name_bot_banned">Bot Banned</line>
+
+      <line id="desc_owner">One of my creators</line>
+      <line id="desc_buds">Close and trusted friends of my creators</line>
+      <line id="desc_patrons">People who support me on &site;patreon.html</line>
+      <line id="desc_guild_owner">The owner of the server</line>
+      <line id="desc_guild_admin">Members with Manage Roles</line>
+      <line id="desc_guild_manager">Members with Manage Channels</line>
+      <line id="desc_channel_manager">Members with Manage Channel here</line>
+      <line id="desc_bot_admin">Members with a role called 'Best Friends'</line>
+      <line id="desc_guild_mod">Members with Manage Messages</line>
+      <line id="desc_channel_mod">Members with Manage Messages here</line>
+      <line id="desc_bot_mod">Members with a role called 'Friends'</line>
+      <line id="desc_bot_banned">Members who are bot-banned</line>
+    </output>
+  </command>
+
+  <!-- Owner only commands: Except for uplink, these do not need to
+                            be translated. -->
+
+  <command id="eval" name="eval">
+    <parenthelpsection args="'code'">Evaluates code snippets.</parenthelpsection>
+    <description>
+      Evaluates code snippets.
+      Wraps given code in a function and calls it.
+      For single line data return, remember return or print statement.
+    </description>
+    <helpsection args="'code'">executes given code.</helpsection>
+    <output />
+  </command>
+
+  <command id="repl" name="repl">
+    <parenthelpsection>Starts a repl shell.</parenthelpsection>
+    <description>
+      Starts a repl shell.
+      Lives in channel until inactive for 10 minutes.
+      End with `exit`.
+    </description>
+    <output />
+  </command>
+
+  <command id="sql" name="sql">
+    <parenthelpsection>Executes SQL statements</parenthelpsection>
+    <description>
+      Executes SQL on the database.
+    </description>
+
+    <output>
+      <line id="no_args">Use `&call;sql fetch|execute|tables|schema`</line>
+    </output>
+
+    <command id="fetch" name="fetch" alias="get">
+      <parenthelpsection args="'query'">Fetches rows.</parenthelpsection>
+      <description>Fetches rows from the database.</description>
+      <helpsection args="'query'">Fetches rows.</helpsection>
+      <output />
+    </command>
+
+    <command id="execute" name="execute" alias="exec eval run">
+      <parenthelpsection args="'query' [; 'query'...]">Executes statements.</parenthelpsection>
+      <description>Executes a statement on the database.</description>
+      <helpsection args="'query'">Executes and commits a single statement.</helpsection>
+      <helpsection args="'query' ; 'query'...">Executes `;` separated statements in a single transaction.</helpsection>
+      <output />
+    </command>
+
+    <command id="tables" name="tables" alias="list">
+      <parenthelpsection>Fetches table names.</parenthelpsection>
+      <description>Fetches all table names.</description>
+      <output />
+    </command>
+
+    <command id="schema" name="schema">
+      <parenthelpsection args="'table'">Fetches table schema.</parenthelpsection>
+      <description>Fetches table schema.</description>
+      <helpsection args="'table'">Fetches table schema.</helpsection>
+      <output />
+    </command>
+  </command>
+
+  <command id="sudo" name="sudo">
+    <parenthelpsection args="'member' 'command...'">Runs a command as someone else.</parenthelpsection>
+    <description>Performs a command as someone else.</description>
+    <helpsection args="'member' 'command...'">Command does not need an invoker.</helpsection>
+    <output />
+  </command>
+
+
+</extension>

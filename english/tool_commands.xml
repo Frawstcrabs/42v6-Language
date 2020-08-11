@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<!DOCTYPE extension SYSTEM "langformat.dtd" [
+  <!ENTITY call "&#xF000;">
+  <!ENTITY defaultcall "&#xF001;">
+  <!ENTITY zwsp "&#x200B;">
+  <!ENTITY site "https://42.rockett.space/v6/">
+]>
+
+<extension id="english" site-link="&site;tools.html">
+  <command id="sync" name="sync">
+    <parenthelpsection args="['seconds'] ['content']">Runs a live countdown timer</parenthelpsection>
+    <description>
+      Makes me start a countdown from a given value.
+
+      If the starting value is very high, I may accidentally lose track and stop part way.
+      Any content at the end of the command will be recalled once the timer is up.
+    </description>
+    <helpsection args="['seconds'] ['message/mentions']">Starts a new sync timer.</helpsection>
+    <documentation>
+      Start a live countdown in chat for up to 1 hour (3600 seconds) and post the given message when it is done.
+      You can add pings to the message to make it act like a short time remind/countdown command. This message will only actually process as a mention if the timer is longer than 5 minutes, otherwise the message content is edited into the initial message.
+
+      As the timer nears 0, it will update quicker. This is to conserve on ratelimit as 42 can only make so many requests in a short period.
+
+      New in v6:
+       - Can use timers up to 1 hour now.
+       - Can supply a message to send at the end of the timer.
+    </documentation>
+
+    <output>
+      <line id="start_ARG_ERROR">I couldn't understand how many seconds you wanted. Use a number between 1 and 3600.</line>
+
+      <line id="time_too_long">I cannot run a sync timer longer than an hour (3600s).</line>
+      <choice id="done">
+        <item>GO!</item>
+        <item>:00</item>
+        <item>Done.</item>
+        <item>Don't leave me!</item>
+        <item>Good Luck.</item>
+        <item>-0:01</item>
+        <item>Gao!</item>
+        <item>STOP!</item>
+        <item>Firing missile.</item>
+      </choice>
+    </output>
+  </command>
+
+  <command id="discrim" name="discrim" alias="discriminator discordtag">
+    <parenthelpsection args="['0000']">Gets names that match a discriminator.</parenthelpsection>
+    <description>
+      Fetches the names matching a given discriminator.
+
+      This command is to assist non-Nitro members to randomise their discriminator for example to avoid a stalker.
+      By changing your username to one where your discriminator is taken, discord randomises your discriminator.
+      This can only be done very infrequently.
+    </description>
+    <helpsection args="['0000']">Gets names occupying a discriminator. If no discriminator is passed, your own is used.</helpsection>
+    <documentation>
+      Fetches the names matching a given discriminator.
+
+      This command is to assist non-Nitro members to randomise their discriminator for example to avoid a stalker.
+      By changing your username to one where your discriminator is taken, discord randomises your discriminator.
+      This can only be done very infrequently.
+    </documentation>
+
+    <output>
+      <line id="search_ARG_ERROR">A discrim must be between 0001 and 9999.</line>
+      <pluralgroup id="output">
+        <plural value="0">
+          ```fix
+          I did not find any other members with the discrim {discrim}.
+          ```
+        </plural>
+        <plural value="1">
+          ```fix
+          Found 1 matching member on your shard with the discrim {discrim} =
+          {members}
+          ```
+        </plural>
+        <plural>
+          ```fix
+          Found {value} matching members on your shard with the discrim {discrim} =
+          {members}
+          ```
+        </plural>
+      </pluralgroup>
+    </output>
+  </command>
+
+  <command id="perms" name="perms" alias="permissions">
+    <parenthelpsection args="['@target']">Shows permissions for a user.</parenthelpsection>
+    <description>
+      Shows you the set of permissions you or someone else can use.
+      Lines that start with a `+` are granted, those starting with a `-` are denied.
+    </description>
+    <helpsection args="['@target']">Shows permissions for target. If no target is given, shows your own permissions.</helpsection>
+    <documentation>
+      Shows you the set of permissions a user has.
+      This uses diff formatting meaning that lines beginning with a `+` (yellow) are granted, and lines starting with a `-` (red) are denied
+
+      Changed in v6
+       - You can use this command to see details about any member.
+       - Shows you both your server permissions, and your channel permissions.
+    </documentation>
+
+    <output>
+      <line id="target_ARG_ERROR">I could not find the member you wanted to get permissions for.</line>
+
+      <line id="guild_perms">Whole Server</line>
+      <line id="channel_perms">This Channel</line>
+
+      <line id="general">General Permissions</line>
+      <line id="general_administrator">Administrator</line>
+      <line id="general_view_audit_log">View Audit Log</line>
+      <line id="general_manage_guild">Manage Server</line>
+      <line id="general_manage_roles">Manage Roles</line>
+      <line id="general_manage_channels">Manage Channels</line>
+      <line id="general_kick_members">Kick Members</line>
+      <line id="general_ban_members">Ban Members</line>
+      <line id="general_create_instant_invite">Create Instant Invite</line>
+      <line id="general_manage_nicknames">Manage Nicknames</line>
+      <line id="general_manage_emojis">Manage Emojis</line>
+      <line id="general_manage_webhooks">Manage Webhooks</line>
+
+      <line id="text">Text Permissions</line>
+      <line id="text_read_messages">Read Messages</line>
+      <line id="text_send_messages">Send Messages</line>
+      <line id="text_send_tts_messages">Send TTS Messages</line>
+      <line id="text_manage_messages">Manage Messages</line>
+      <line id="text_embed_links">Embed Links</line>
+      <line id="text_attach_files">Attach Files</line>
+      <line id="text_read_message_history">Read Message History</line>
+      <line id="text_mention_everyone">Mention Everyone</line>
+      <line id="text_external_emojis">Use External Emoji</line>
+      <line id="text_add_reactions">Add Reactions</line>
+
+      <line id="voice">Voice Permissions</line>
+      <line id="voice_read_messages">See Voice Channels</line>
+      <line id="voice_connect">Connect</line>
+      <line id="voice_speak">Speak</line>
+      <line id="voice_stream">Stream Video</line>
+      <line id="voice_mute_members">Mute Members</line>
+      <line id="voice_deafen_members">Deafen Members</line>
+      <line id="voice_move_members">Move Members</line>
+      <line id="voice_use_voice_activation">Use Voice Activity</line>
+    </output>
+  </command>
+
+  <command id="me" name="me" alias="say">
+    <parenthelpsection args="'content...'">A replacement for Discord's /me</parenthelpsection>
+    <description>
+      Posts the content in an embed. Looks nicer than Discord's /me
+    </description>
+    <helpsection args="'content...'">Posts `content` in a textbox.</helpsection>
+    <documentation>
+      Posts the content in an embed. Looks nicer than Discord's /me
+
+      Changed in v6
+       - Removed Jerry from randomly appearing. Undertale memes are so 2016
+    </documentation>
+
+    <output>
+      <line id="default">doesn't know what to say.</line>
+    </output>
+  </command>
+
+  <command id="quote" name="quote">
+    <parenthelpsection args="'message id' ['#channel']">Quotes a message's content and context</parenthelpsection>
+    <description>
+      This command finds a message by ID in current chanenl or optionally in a different text channel by ID and and then posts the message in an embed.
+
+      To get an ID, enable Developer Mode in the appearence settings, then click on the cog next to the message or text channel.
+    </description>
+    <helpsection args="'message id' ['#channel']">Quotes a message's content and context. If no channel is provided, it uses a current one.</helpsection>
+    <documentation>
+      If no channel is provided, the current channel will be used
+    </documentation>
+
+    <output>
+      <line id="not_found">​I could not find the message you asked me to quote.</line>
+      <line id="jump_button">[Jump]</line>
+      <line id="message_id_ARG_MISSING">
+        You asked me to quote a message, but didn't say which. Use `&call;quote 'id'`.
+        To get an ID, enable Developer Mode and click Copy ID in the cog menu.
+      </line>
+      <line id="message_id_ARG_ERROR">
+        I couldn't understand your message ID for this command. `Use &call;quote 'id'`.
+        To get an ID, enable Developer Mode and click Copy ID in the cog menu.
+      </line>
+      <line id="channel_ARG_ERROR">
+        I couldn't understand your channel for this command. Use `&call;quote 'id' '#channel'`.
+      </line>
+    </output>
+  </command>
+
+
+
+</extension>

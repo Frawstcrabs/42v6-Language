@@ -1,0 +1,596 @@
+<?xml version="1.0"?>
+<!DOCTYPE extension SYSTEM "langformat.dtd" [
+  <!ENTITY call "&#xF000;">
+  <!ENTITY defaultcall "&#xF001;">
+  <!ENTITY zwsp "&#x200B;">
+  <!ENTITY site "https://42.rockett.space/v6/">
+]>
+
+<extension id="english" site-link="&site;moderation.html">
+  <documentation>
+
+  </documentation>
+
+  <command id="remove" name="remove" alias="delete">
+    <parenthelpsection>Deletes messages from the chat.</parenthelpsection>
+    <description>
+      Deletes messages from the chat.
+      'limit' in all commands is the number of messages searched while deleting, not the number deleted.
+      There is a maximum of 1000 deleted messages.
+      If the given limit is higher than 1000, then it will be considered a message ID, and in this case, 42 will deletes every message after the given ID (but not the given message itself.)
+    </description>
+    <documentation>
+      Deletes messages that match a certain criteria.
+
+      In all subcommands, the `limit` parameter determines how much chat history will be searched when deciding on what to delete.
+
+      Changed in v6:
+      - Added `&defaultcall;remove emoji` to remove any message composed of emoji.
+      - Added `&defaultcall;remove emojipasta` to remove any message which contains less than 2/3 alphanumeric ascii characters.
+      - Added after message limits to only remove messages posted after the given one. Useful for `+announce`.
+      - Added inverted selection.
+    </documentation>
+
+    <output>
+      <line id="invalid_subcommand">I do not know what you want me to remove. Use `&call;help command`</line>
+      <line id="no_delete_permission">I require Manage Messages and Read Message History to delete messages.</line>
+      <pluralgroup id="success">
+        <plural value="1">I have deleted one message.</plural>
+        <plural>I have deleted {count} messages.</plural>
+      </pluralgroup>
+    </output>
+
+    <command id="users" name="users" alias="user from">
+      <parenthelpsection args="'@member' [['@member' ...] 'limit']">Deletes messages by a user.</parenthelpsection>
+      <description>Deletes messages by a user or set of users.</description>
+      <helpsection args="'@member' ['@member' ...] ['limit']">Deletes messages from one or many users.</helpsection>
+      <documentation>
+        Deletes messages from one or a group of users. Good for purging problematic conversations.
+        `limit` must be specified as the last argument
+        `@member` is the name, ID, Discord Tag, nickname or mention of the target user(s).
+      </documentation>
+
+      <output>
+        <line id="members_ARG_MISSING">I cannot find the user(s) you want to delete messages from.</line>
+        <line id="limit_ARG_ERROR">I cannot understand the limit you requested. I think this means one of your members was invalid.</line>
+      </output>
+
+      <command id="except" name="except" alias="inv not inverse">
+        <parenthelpsection args="'@member' ['@member' ...] ['limit']">Deletes messages from everyone except the listed users.</parenthelpsection>
+        <description>Deletes messages from everyone except the given users.</description>
+        <helpsection args="'@member' ['@member' ...] ['limit']">Deletes messages from everyone except the given users.</helpsection>
+        <documentation>
+          Deletes messages from anyone not in the given group of users. Effectively a reverse of `&defaultcall;remove users`
+        </documentation>
+        <output />
+      </command>
+    </command>
+
+    <command id="embeds" name="embeds" alias="embed image link upload">
+      <parenthelpsection args="['limit']">Deletes messages with an embed or upload attached.</parenthelpsection>
+      <description>Deletes messages containing an embed or attached upload.</description>
+      <helpsection args="['limit']">Deletes messages with an embed or upload attached.</helpsection>
+      <documentation>
+        Deletes any message that has an attached link embed, image embed, rich embed, etc, or any kind of upload.
+      </documentation>
+      <output />
+    </command>
+
+    <command id="contains" name="contains" alias="containing">
+      <parenthelpsection args="'search term' ['limit']">Deletes messages containing the search term.</parenthelpsection>
+      <description>Deletes messages containing the search term. Quotes are required if the search term contains spaces.</description>
+      <helpsection args="'search term' ['limit']">Deletes messages containing the search term.</helpsection>
+      <documentation>
+        Deletes any message containing the search term.
+        The search term can be anything, but if it is short then you may catch messages you didn't intend to.
+      </documentation>
+      <output>
+        <line id="term_ARG_MISSING">You didn't tell me what your search term is. Use `&call;remove contains 'term' ['limit']`</line>
+      </output>
+    </command>
+
+    <command id="system" name="system">
+      <parenthelpsection args="['limit']">Deletes system messages.</parenthelpsection>
+      <description>Deletes system messages (Member join and new booster messages.)</description>
+      <helpsection args="['limit']">Deletes system messages.</helpsection>
+      <documentation>
+        Deletes system messages from the channel.
+        This includes messages such as the new member message and the new booster message.
+      </documentation>
+      <output />
+    </command>
+
+    <command id="all" name="all">
+      <parenthelpsection args="['limit']">Deletes all messages.</parenthelpsection>
+      <description>Deletes everything.</description>
+      <helpsection args="['limit']">Deletes everything.</helpsection>
+      <documentation>Deletes all messages.</documentation>
+      <output />
+    </command>
+
+    <command id="emoji" name="emoji">
+      <parenthelpsection args="['limit']">Deletes messages consisting of emojis.</parenthelpsection>
+      <description>Deletes any message only containing emojis or whitespace.</description>
+      <helpsection args="['limit']">Deletes messages consisting of emojis.</helpsection>
+      <documentation>
+        Deletes any message that contains only emojis or whitespace.
+      </documentation>
+      <output />
+    </command>
+
+    <command id="emojipasta" name="emojipasta" alias="pasta copypasta">
+      <parenthelpsection args="['limit']">Deletes emojipasta messages.</parenthelpsection>
+      <description>Deletes any message only containing less than 2/3 ascii (not counting whitespace.)</description>
+      <helpsection args="['limit']">Deletes emojipasta messages.</helpsection>
+      <documentation>
+        Deletes any message with more than 1/3 non-ascii characters.
+        Whitespace isn't counted when working out the proportions.
+        **Note**: Contrary to the name, this command deletes messages that are 1/3 non-ascii, this means that messages containing accent characters, or things like japanese or chinese characters will also be deleted.
+      </documentation>
+      <output />
+    </command>
+
+    <!-- Insert more subcommands here -->
+  </command>
+
+  <command id="ban" name="ban">
+    <parenthelpsection args="'@member' ...">Bans a member from the server.</parenthelpsection>
+    <description>Bans a member or group of members from the server.</description>
+    <helpsection args="'@member' ...">Bans one or more members.</helpsection>
+    <documentation>
+      Bans a member of group of members from the server.
+
+      Changed in v6:
+      - Default `&defaultcall;ban` command no longer deletes messages.
+      - `&defaultcall;ban days` can be used to delete 1 or 7 days worth of content.
+      - Added ability to ban a group of members at a time with the same reason.
+    </documentation>
+
+    <output>
+      <line id="members_ARG_MISSING">Who did you want me to ban? Use `&call;ban '@member'...`</line>
+      <line id="members_ARG_ERROR">I could not find your target member.</line>
+      <line id="permission_ban_members">You must have ban members to use this command.</line>
+      <line id="no_suicide">I do not condone being used as a tool for assisted suicide.</line>
+      <line id="no_bot_perms">I do not have permission to do this. Make sure you grant me the Ban Members permission.</line>
+      <line id="ban_cause">[Ban by {0} ({1})]</line>
+      <line id="ban_reason"> - With Reason: {}</line>
+      <pluralgroup id="success">
+        <plural value="1">I have banned that member.</plural>
+        <plural>I have banned those members.</plural>
+      </pluralgroup>
+      <pluralgroup id="partial_success">
+        <plural value="1">I tried to ban that group, but {} seems to be immune to whatever I throw at them.</plural>
+        <plural>I tried to ban that group, but Discord wanted to keep things perfectly balanced. This guys survived: {}</plural>
+      </pluralgroup>
+    </output>
+
+    <command id="days" name="days" alias="delete day">
+      <parenthelpsection args="'1 or 7' '@member'... ['reason']">Bans with delete</parenthelpsection>
+      <description>
+        Bans a member or group of members while also deleting messages.
+      </description>
+      <helpsection args="'1 or 7' '@member'... ['reason']">
+        Bans with delete messages.
+        Days must be either 1 or 7.
+      </helpsection>
+
+      <output>
+        <line id="days_ARG_MISSING">You must specify to delete either 1 or 7 days. Use either `&call;ban days 1 @member...` or `&call;ban days 7 @member...`</line>
+        <line id="days_ARG_ERROR">You can only delete exactly 1 or 7 days worth of messages. Use `&call;ban days 1 @member...` or `&call;ban days 7 @member...`</line>
+      </output>
+    </command>
+  </command>
+
+  <command id="kick" name="kick">
+    <parenthelpsection args="'@member'">Kicks a member from the server.</parenthelpsection>
+    <description>Kicks a member or group of members from the server.</description>
+    <helpsection args="'@member'[...] ['reason']">Kicks one or more members.</helpsection>
+
+    <output>
+      <line id="members_ARG_MISSING">Who did you want me to kick? Use `&call;kick '@member'...`</line>
+      <line id="members_ARG_ERROR">I could not find your target member.</line>
+      <line id="permission_kick_members">You must have kick members to use this command.</line>
+      <line id="no_suicide">There is a leave button in the top left. You don't need my help for this.</line>
+      <line id="no_bot_perms">I do not have permission to do this. Make sure you grant me the Kick Members permission.</line>
+      <line id="ban_cause">[Kick by {0} ({1})]</line>
+      <line id="ban_reason"> - With Reason: {}</line>
+      <pluralgroup id="success">
+        <plural value="1">I have kicked that member.</plural>
+        <plural>I have kicked those members.</plural>
+      </pluralgroup>
+      <pluralgroup id="partial_success">
+        <plural value="1">I tried to kick that group, but {} was too strong for my boot.</plural>
+        <plural>I tried to kick that group, but these people are too swift to kick: {}</plural>
+      </pluralgroup>
+    </output>
+  </command>
+
+  <command id="softban" name="softban">
+    <parenthelpsection args="'@member'">Softbans a member from the server.</parenthelpsection>
+    <description>Kicks a member or group of members from the server and deletes any message they've posted in the last day.</description>
+    <helpsection args="'@member'[...] ['reason']">Softbans one or more members.</helpsection>
+
+    <output>
+      <line id="members_ARG_MISSING">Who did you want me to softban? Use `&call;ban '@member'...`</line>
+      <line id="members_ARG_ERROR">I could not find your target member.</line>
+      <line id="permission_softban_members">You must have EITHER ban members OR kick members and manage messages to use this command.</line>
+      <line id="no_suicide">Just purge your own messages with `&call;remove` and then leave.</line>
+      <line id="no_bot_perms">I do not have permission to do this. Make sure you grant me the Ban Members permission.</line>
+      <line id="ban_cause">[Softban by {0} ({1})]</line>
+      <line id="ban_reason"> - With Reason: {}</line>
+      <pluralgroup id="success">
+        <plural value="1">I have softbanned that member.</plural>
+        <plural>I have softbanned those members.</plural>
+      </pluralgroup>
+      <pluralgroup id="partial_success">
+        <plural value="1">I tried to softban that group, but {} escaped my hammer.</plural>
+        <plural>I tried to softban that group, but these people evaded me: {}</plural>
+      </pluralgroup>
+      <line id="unban_reason">[SOFTBAN]</line>
+    </output>
+  </command>
+
+  <command id="xban" name="xban" alias="hackban">
+    <parenthelpsection args="'id'... ['reason']">Bans a user who is not on the server using their ID.</parenthelpsection>
+    <description>
+      Bans a user or group of users who are not on the server.
+      You cannot use xban to ban members on the server, use `&call;ban 'id'` instead.
+    </description>
+    <helpsection args="'id'... ['reason']">Bans a user or group of users who are not on the server.</helpsection>
+    <output>
+      <line id="members_ARG_MISSING">Who did you want me to ban? Use `&call;ban '@member'...`</line>
+      <line id="members_ARG_ERROR">I could not find your target member.</line>
+      <line id="permission_ban_members">You must have ban members to use this command.</line>
+      <line id="no_bot_perms">I do not have permission to do this. Make sure you grant me the Ban Members permission.</line>
+      <line id="not_an_id">'{}' does not look like a valid user ID. If this is the start of your reason, then make the reason not start with a number.</line>
+      <line id="member_on_server">&lt;@{0}&gt; is already on the server. Use `&call;ban {0}` to ban them.</line>
+      <line id="ban_cause">[X-ban by {0} ({1})]</line>
+      <line id="ban_reason"> - With Reason: {}</line>
+      <pluralgroup id="success">
+        <plural value="1">I have banned that user.</plural>
+        <plural>I have banned those users.</plural>
+      </pluralgroup>
+    </output>
+  </command>
+
+  <command id="pingable" name="pingable">
+    <parenthelpsection args="'role'">Enables mentioning a role for a single message.</parenthelpsection>
+    <description>
+      Enables mentioning a role for a single message.
+      Once the role has been mentioned, it will be made not mentionable.
+      The role must be mentioned within 1 hour or it will timeout and be made not mentionable again.
+    </description>
+    <helpsection args="'role'">Sets the role to mentionable.</helpsection>
+
+    <output>
+      <line id="started">Made role '{role}' mentionable. I will listen for its first use.</line>
+      <line id="not_used">Pingable role '{role}' was not used within an hour. Mentioning it is disabled again.</line>
+      <line id="used_in">Role '{role}' was mentioned in {channel} by {user}. I have disabled mentioning this role.</line>
+      <line id="reason_on">[PINGABLE ENABLED]</line>
+      <line id="reason_off">[PINGABLE DISABLED]</line>
+    </output>
+  </command>
+
+  <command id="warning" name="warning" alias="warn warns warnings">
+    <parenthelpsection>Tracks member warnings for your server.</parenthelpsection>
+    <description>
+      Tracks member warnings on your servers.
+      This command only counts and tracks warnings. It doesn't take any additional action, that is a task left to the mods.
+
+      You can set time periods for the warnings to expire, even setting a different time for each warning.
+      Expired warnings wont be deleted, just flagged as expired.
+
+      You can have 2 text fields in a warning, "reason"s and "note"s. The key difference is that the user can see reasons, but only staff can see notes.
+      For all commands, passing a user ID will allow you to query for users that have left the server.
+    </description>
+    <helpsection>DM's you your warnings for this server.</helpsection>
+
+    <output>
+      <line id="no_warnings">No warnings.</line>
+      <line id="header">Warnings for {}.</line>
+      <line id="recent_warnings">Recent warnings from this server</line>
+      <pluralgroup id="expires">
+        <plural value="1">(Expires tomorrow)</plural>
+        <plural>(Expires in {} days)</plural>
+      </pluralgroup>
+      <line id="no_expire">(Does not expire)</line>
+      <line id="expired">(Expired)</line>
+      <line id="void">(Void)</line>
+      <line id="permanent">(Permanent)</line>
+      <line id="footer">User joined</line>
+      <line id="footer_not_on_server">User not on server</line>
+      <line id="footer_recent">Use `&call;help warning` for tools.</line>
+
+      <!-- Common command outputs -->
+      <line id="warning_ARG_ERROR">I couldn't understand what warning you wanted me to update.</line>
+      <line id="warning_NOT_FOUND">I couldn't find a warning with that number.</line>
+
+      <!-- Overwrite the permissions messages -->
+      <line id="permission_guild_mod">Only moderators can search or edit warnings. To get your own warnings, do `&call;warning` with no subcommands.</line>
+      <line id="permission_guild_admin">Only admins have the ability to delete warnings. Use `&call;warning void` instead.</line>
+    </output>
+
+    <command id="search" name="search" alias="get list show">
+      <parenthelpsection args="'name or id'">Searches for a user's warnings.</parenthelpsection>
+      <description>
+        Searches for a user's warnings. This can use proper name resolution,
+        but if the member is not on the server, passing an ID will search
+        for the member outside the server.
+      </description>
+      <helpsection args="'name or id'">Searches for a user's warnings.</helpsection>
+
+      <output>
+        <line id="target_ARG_MISSING">You asked to search for warnings but didn't tell me who's warnings.</line>
+        <line id="target_ARG_ERROR">I couldn't find the user you asked for. Did you copy the right ID?</line>
+      </output>
+    </command>
+
+    <command id="add" name="add" alias="insert append create make insert">
+      <parenthelpsection args="'target' ['reason' ['note']]">Creates a new warning for the target member.</parenthelpsection>
+      <description>
+        Creates a new warning for the target member.
+        The member will be able to see the reason. Only staff can see the note.
+      </description>
+      <helpsection args="'target' ['reason' ['note']]">Target may be the ID of a member who is not on the server.</helpsection>
+
+      <output>
+        <line id="target_ARG_MISSING">You asked me to give someone a warning but didn't tell me who. Use `&call;warning add 'user' 'reason' ['note']`</line>
+        <line id="target_ARG_ERROR">I could not find the user you requested. Did you copy the correct ID></line>
+      </output>
+
+      <command id="permanent" name="permanent" alias="perma">
+        <parenthelpsection args="'target' ['reason' ['note']]">Creates a new permanent warning.</parenthelpsection>
+        <description>
+          This is the same as `&call;warning add` but flags the warning as permanent.
+          Permanent warnings still advance the timeout list (i.e. if the timeouts are 30, 60 and the first warning is permanent, the second warning will timeout in 60 days.)
+        </description>
+        <helpsection args="'target' ['reason' ['note']]">Target may be the ID of a member who is not on the server.</helpsection>
+        <output />
+      </command>
+    </command>
+
+    <command id="permanent" name="permanent" alias="perma">
+      <parenthelpsection args="'warning number'">Toggles permanent on a given warning.</parenthelpsection>
+      <description>
+        Marks a warning as permanent or not permanent.
+        A permanent warning will still advance the timeout list, and when a warning is made not permanent, the timeout is relative to when the warning was created.
+      </description>
+      <helpsection args="'warning number'">The number is the `monospace` next to the date in a warning search embed.</helpsection>
+      <output>
+        <line id="warning_ARG_MISSING">You asked to toggle a warning to permanent, but didn't tell me which. Please use a warning number that you can find with `&call;warning search 'user'`</line>
+        <pluralgroup id="success">
+          <plural value="1">I have made this warning permanent.</plural>
+          <plural value="0">I will allow this warning to expire again.</plural>
+          <!--Unknown value should never happen-->
+        </pluralgroup>
+      </output>
+    </command>
+
+    <command id="edit" name="edit" alias="update modify">
+      <parenthelpsection args="'warning number' ['reason' ['note']]">Updates the reason of an existing warning.</parenthelpsection>
+      <description>
+        Updates the reason and note of an existing warning.
+        To make the existing warning permanent, use `&call;warning permanent`.
+        To void or delete the warning, use `void` or `delete` (note that only admins can delete warnings.)
+      </description>
+      <helpsection args="'warning number' ['reason' ['note']]">The number is displayed in the search embed next to the date.</helpsection>
+
+      <output>
+        <line id="warning_ARG_MISSING">You asked to edit a warning, but didn't tell me which. Please use a warning number that you can find with `&call;warning search 'user'`</line>
+      </output>
+    </command>
+
+    <command id="void" name="void" alias="invalidate invalid">
+      <parenthelpsection args="'warning number'">Invalidates a warning.</parenthelpsection>
+      <description>
+        Marks a warning as voided.
+        Voided warnings are not counted when calculating the expire date of future warnings, but voiding a warning does not reset the expire dates of other existing warnings.
+        Users will not see voided warnings when they request their own warnings back.
+      </description>
+      <helpsection args="'warning number'">The number is displayed in the search embed next to the date.</helpsection>
+
+      <output>
+        <line id="warning_ARG_MISSING">You asked to void a warning but didn't tell me which. You can use `&call;warning search 'user'` to find the warning number.</line>
+      </output>
+    </command>
+
+    <command id="delete" name="del" alias="remove">
+      <parenthelpsection args="'warning number'">Deletes a warning completely.</parenthelpsection>
+      <description>
+        Deletes a warning from the database.
+        Deleting a warning does not change the expire date of the user's other warnings.
+      </description>
+      <helpsection args="'warning number'">The number is displayed in the search embed next to the date.</helpsection>
+
+      <output>
+        <line id="warning_ARG_MISSING">You asked to delete a warning but didn't tell me which. Use `&call;warning search 'user'` to find the number.</line>
+      </output>
+
+      <command id="user" name="user" alias="member from">
+        <parenthelpsection args="'name or id'">Deletes all warnings belonging to a user.</parenthelpsection>
+        <description>
+          Deletes all warnings from a user.
+          This also implicitly resets the user's warning timeouts to that of a new user.
+        </description>
+        <helpsection args="'name or id'">The user ID does not have to point to a member on the server.</helpsection>
+
+        <output>
+          <line id="target_ARG_MISSING">You asked me to delete a user's warnings but did not tell me who's. Use `&call;warning delete user 'name or id'`</line>
+          <line id="target_ARG_ERROR">I could not find the user you asked for. If they have left the server, you must use an ID to reference them.</line>
+          <line id="no_warnings">This user does not have any warnings...</line>
+          <pluralgroup id="REQUEST">
+            <plural value="1">This user has 1 warning. Are you sure you want to delete it?</plural>
+            <plural>This user has {} warnings. Are you sure you want to delete them all?</plural>
+          </pluralgroup>
+          <line id="success">I have cleared that user's warnings.</line>
+        </output>
+      </command>
+
+      <command id="all" name="all">
+        <parenthelpsection>Deletes ALL the warnings on the server</parenthelpsection>
+        <description>
+          Deletes all warnings from the server.
+          This cannot be undone.
+
+          This command has a side-effect of restarting the warning numbers back at 1.
+        </description>
+
+        <output>
+          <line id="REQUEST">Are you sure you want to delete all the warnings on the server?</line>
+          <line id="final_REQUEST">Are you *absolutely certain* you want to delete everything. This cannot be undone. If you want an external copy before deleting, stop here, and do `&call;warning export`</line>
+          <line id="success">I have cleared all of the warnings on the server.</line>
+        </output>
+      </command>
+    </command>
+
+    <command id="export" name="export">
+      <parenthelpsection>Exports the servers warnings as a CSV file.</parenthelpsection>
+      <description>
+        Exports all the warnings from the server into a CSV file that can be loaded into Excel or Google Sheets.
+      </description>
+
+      <output>
+        <list id="headers">
+          <line>Number</line>
+          <line>User ID</line>
+          <line>User Name</line>
+          <line>Date Created</line>
+          <line>Moderator ID</line>
+          <line>Moderator Name</line>
+          <line>Reason</line>
+          <line>Mod Notes</line>
+          <line>Flag</line>
+        </list>
+        <dict id="flags">
+          <entry name="void"><line>Voided</line></entry>
+          <entry name="permanent"><line>Permanent</line></entry>
+          <entry name="expired"><line>Expired</line></entry>
+          <entry name="expires_after"><line>Expires after {} days</line></entry>
+          <entry name="expires_never"><line>Does not expire</line></entry>
+        </dict>
+      </output>
+    </command>
+
+    <command id="setexpire" name="setexpire" alias="expire expiry">
+      <parenthelpsection args="'days' ...">Sets how long it takes each subsequent warning to expire.</parenthelpsection>
+      <description>
+        Sets how many days it takes for each warning a user accumulates to expire.
+        You can set multiple different time frames, but the last one will be repeated once the list is exhausted for a user.
+
+        Setting an expire time of 0 will mark a warning immediately as expired unless it is used as the last time, in which it will make any subsequent warnings permanent.
+
+        Note this will *NOT* update the timeouts on existing warnings.
+      </description>
+      <helpsection args="'days' ...">If the last value is 0, it means that any subsequent warnings are permanent.</helpsection>
+
+      <output>
+        <line id="days_ARG_MISSING">You asked me to set the expire time of warnings on your server but didn't tell me when to expire them. Use `&call;warning setexpire 'days' ['days' ...]`</line>
+        <line id="days_ARG_ERROR">I couldn't work out how many days to expire warnings. You can only use whole numbers here.</line>
+        <line id="no_negative">Negative numbers are not valid</line>
+        <line id="too_many_days">You can only schedule the first 10 warnings.</line>
+
+        <line id="success">I have updated the guild's warning timeouts.</line>
+        <pluralgroup id="expires_days">
+          <plural value="0">Expires immediately.</plural>
+          <plural value="1">Expires after 1 day.</plural>
+          <plural>Expires after {} days.</plural>
+        </pluralgroup>
+        <line id="last">#{} and all subsequent warnings</line><!--...ent warnings: Expires aft...-->
+        <line id="no_expire">Do not expire.</line>
+      </output>
+    </command>
+  </command>
+
+  <command id="review" name="review">
+    <parenthelpsection>Forces all posts in a channel to pass submission reviewed by mods.</parenthelpsection>
+    <description>
+      Creates a backstage mod-review channel.
+      When a user posts into a targeted channel, the message will be deleted and reposted into the matching review channel. From here moderators can choose to approve or reject the post by using the reactions. A target channel must have a cooldown of at least 5 minutes. If this isn't set before the command call, the command will automatically set it to 5 minutes.
+
+      By default when a review channel is created, only users with Manage Message permissions in the target channel will have access to the review channel, but the permissions can be edited after the fact to add or remove people that can review posts.
+
+      A post only requires one check or cross to be approved or rejected, but the user taking the action will be attached to the message for auditing purposes.
+
+      Once a post is processed, the reactions will be removed from it to signify that it has been handled.
+    </description>
+
+    <output>
+      <line id="no_subcommand">Review channels work like review-only Subreddits. Any message sent by non-mods will be held for review by a mod before being resent. Use `&call;help review` for detail.</line>
+      <line id="target_ARG_MISSING">You asked me about review channels but didn't tell me which channel.</line>
+      <line id="target_ARG_ERROR">I could not understand the channel name or mention you gave me.</line>
+
+      <line id="already_a_channel">The selected channel already has a review channel. Use `&call;review remove #{0}` first.</line>
+
+      <!-- On guild channel update -->
+      <line id="invalid_slowmode">Mod review channels must have a slowmode of 5 minutes or more. I have updated it to 5 minutes. Use `&call;review remove #{}` to disable this restriction.</line>
+
+      <!-- On message send -->
+      <line id="mod_notification">New message sent in {0} by {1} waiting for review.</line>
+      <line id="user_notification">Message sent in {0} has been held for review. If approved, the message will be reposted into the original channel. If rejected, you will be alerted and the message will remain hidden.</line>
+      <line id="attachment">Attachment (deleted)</line>
+
+      <!-- On reaction add -->
+      <line id="accept_update">Accepted by {0}</line>
+      <line id="deny_update">Rejected by {0}</line>
+
+      <line id="deny_request">Enter why this message was rejected. This will be sent to the user in private, or type in "none" to deny without explanation.</line>
+      <line id="deny_abort_trigger">none</line> <!-- Lowercase!! -->
+      <line id="deny_timeout">No response received, will treat denial as if no response was sent.</line>
+
+      <pluralgroup id="deny_message">
+        <plural value="0">Your message in {0} was rejected.</plural>
+        <plural value="1">
+          Your message in {0} was rejected. The moderators gave the following message as a reason:
+          >>> {1}
+        </plural>
+      </pluralgroup>
+    </output>
+
+    <command id="create" name="create" alias="make link">
+      <parenthelpsection args="#channel">Creates a review channel</parenthelpsection>
+      <description>
+        Creates a new review channel. The channel will only be readable by members with Manage Messages in the target channel.
+      </description>
+      <helpsection args="#channel">Creates a review channel. #channel is the user-facing channel to hold messages from.</helpsection>
+
+      <output>
+        <pluralgroup id="success">
+          <plural value="0">I have created the review channel at &lt;#{0}&gt;</plural>
+          <plural value="1">I have created the review channel at &lt;#{0}&gt;. I had to set the channel cooldown for the tracked channel to 5 minutes.</plural>
+        </pluralgroup>
+      </output>
+    </command>
+
+    <command id="remove" name="remove" alias="stop delete end">
+      <parenthelpsection args="#channel">Removes a review channel.</parenthelpsection>
+      <description>
+        Unlinks a review channel. Stops messages in the tracked channel from being held for review.
+      </description>
+      <helpsection args="#channel">Unlinks this channel's review channel.</helpsection>
+
+      <output>
+        <line id="not_a_channel">The selected channel is not linked to a review channel.</line>
+        <line id="success">I have unlinked the review channel.</line>
+      </output>
+    </command>
+
+    <command id="link" name="link" alias="update">
+      <parenthelpsection args="#user-channel #mod-channel">Manually sets a review channel for a channel</parenthelpsection>
+      <description>
+        Manually sets the mod-review channel for a user facing channel.
+        The tracked channel must have a cooldown of at least 5 minutes, and will be updated automatically if it does not.
+      </description>
+      <helpsection args="#user-channel #mod-channel">Manually sets a review channel. #user-channel is where messages should be held for review. #mod-channel is where messages can be reviewed.</helpsection>
+
+      <output>
+        <pluralgroup id="success">
+          <plural value="0">I have created the review channel at &lt;#{0}&gt;</plural>
+          <plural value="1">I have created the review channel at &lt;#{0}&gt;. I had to set the channel cooldown for the tracked channel to 5 minutes.</plural>
+        </pluralgroup>
+      </output>
+    </command>
+
+  </command>
+
+
+</extension>
